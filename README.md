@@ -6,13 +6,17 @@ The schema follows a single-source-of-truth pattern where Zod schemas define all
 
 ## File Extensions
 
-OpenMarch uses three file formats for saving and sharing shows:
+The OpenMarch Public Schema uses three file formats for saving and sharing shows:
 
 | Extension | Name | Description |
 | --------- | ---- | ----------- |
 | `.om` | OpenMarch | Uncompressed JSON file containing show data |
 | `.omz` | OpenMarch Zipped | Compressed JSON file for smaller file sizes |
 | `.omp` | OpenMarch Package (Coming soon) | Compressed archive containing show data plus audio files and images |
+
+> Note - the OpenMarch desktop app uses the `.dots` file extension which is not the same thing.
+> A `.dots` an SQLite database file that is highly optimized for editing and interactivity.
+> The [main OpenMarch repo](https://github.com/OpenMarch/OpenMarch) includes scripts for converting `.dots` files to-and-from `.om` files.
 
 ## Installation
 
