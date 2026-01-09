@@ -1,11 +1,35 @@
 {
   "name": "om-schema",
-  "module": "index.ts",
+  "version": "1.0.0",
+  "description": "OpenMarch schema library for marching band drill shows",
+  "module": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
+    "generate-schema": "bun run ./scripts/generate-json-schema.ts",
+    "test": "bun test"
+  },
+  "files": [
+    "dist",
+    "src",
+    "schema.json"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "zod": "^4.3.5"
   }
 }

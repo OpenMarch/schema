@@ -1,0 +1,14 @@
+#!/usr/bin/env bun
+/**
+ * Script to generate the JSON Schema file from Zod schemas.
+ * Run with: bun run generate-schema
+ */
+
+import { getJsonSchemaString } from "../src/json-schema";
+
+const schemaPath = new URL("../schema.json", import.meta.url).pathname;
+const schemaContent = getJsonSchemaString(2);
+
+await Bun.write(schemaPath, schemaContent);
+
+console.log(`JSON Schema written to: ${schemaPath}`);
