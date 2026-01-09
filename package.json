@@ -1,5 +1,5 @@
 {
-  "name": "om-schema",
+  "name": "@openmarch/schema",
   "version": "1.0.0",
   "description": "OpenMarch schema library for marching band drill shows",
   "module": "src/index.ts",
