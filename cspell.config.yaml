@@ -1,0 +1,6 @@
+words:
+  - biomejs
+  - bunx
+  - openmarch
+ignorePaths:
+  - node_modules
