@@ -2,6 +2,10 @@
 	"name": "@openmarch/schema",
 	"version": "1.0.0",
 	"description": "OpenMarch schema library for marching band drill shows",
+	"license": "Apache-2.0",
+	"publishConfig": {
+		"@openmarch:registry": "https://npm.pkg.github.com"
+	},
 	"module": "src/index.ts",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
