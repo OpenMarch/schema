@@ -66,11 +66,11 @@ export const PerformanceAreaSchema = z.object({
 	/** Checkpoints on the y-axis */
 	yCheckpoints: z.array(YCheckpointSchema),
 
-	/** Width of the performance area in inches */
-	widthInches: z.number(),
+	/** Width of the performance area in feet */
+	widthFeet: z.number(),
 
-	/** Height of the performance area in inches */
-	heightInches: z.number(),
+	/** Height of the performance area in feet */
+	heightFeet: z.number(),
 
 	/** Whether or not to use hashes on the field */
 	useHashes: z.boolean(),

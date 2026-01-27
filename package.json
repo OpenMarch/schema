@@ -1,6 +1,6 @@
 {
 	"name": "@openmarch/schema",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "OpenMarch Data Format for storing and processing marching band, indoor, and drum corps drill shows",
 	"license": "Apache-2.0",
 	"homepage": "https://openmarch.com",

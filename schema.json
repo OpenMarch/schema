@@ -87,10 +87,10 @@
 								"additionalProperties": false
 							}
 						},
-						"widthInches": {
+						"widthFeet": {
 							"type": "number"
 						},
-						"heightInches": {
+						"heightFeet": {
 							"type": "number"
 						},
 						"useHashes": {
@@ -102,8 +102,8 @@
 						"inchesPerStep",
 						"xCheckpoints",
 						"yCheckpoints",
-						"widthInches",
-						"heightInches",
+						"widthFeet",
+						"heightFeet",
 						"useHashes"
 					],
 					"additionalProperties": false
