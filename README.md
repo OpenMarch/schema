@@ -26,6 +26,36 @@ npm install @openmarch/schema
 
 ## Usage
 
+### Reading and writing files
+
+The package supports both `.om` (raw JSON) and `.omz` (gzipped) formats. Format is detected automatically when reading.
+
+**Reading** — pass file bytes as an `ArrayBuffer`; the reader decompresses gzip when needed and validates the result:
+
+```typescript
+import { fromOpenMarchSchemaFile } from '@openmarch/schema';
+
+// Get bytes from your environment (e.g. Node, Bun, or browser)
+const bytes = await file.arrayBuffer(); // or readFileSync(..., { encoding: null })
+const schema = await fromOpenMarchSchemaFile(bytes);
+
+// Access the data from the file
+console.log(schema.performers, schema.coordinates);
+```
+
+**Writing** — use `toOpenMarchFile` with `compressed: false` for `.om` or `compressed: true` for `.omz`:
+
+```typescript
+import { toOpenMarchFile } from '@openmarch/schema';
+
+const bytes = await toOpenMarchFile(schema, { compressed: true }); // .omz
+// or
+const bytes = await toOpenMarchFile(schema, { compressed: false }); // .om
+
+// Write bytes with your environment's API (e.g. fs.writeFile, Bun.write, or Blob/File in browser)
+await Bun.write('show.omz', bytes);
+```
+
 ### Validating Show Data
 
 ```typescript

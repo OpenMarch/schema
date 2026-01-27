@@ -30,6 +30,7 @@ export type {
 	XCheckpoint,
 	YCheckpoint,
 } from "./types";
+export * from "./utils";
 // Validation exports
 export {
 	formatValidationErrors,

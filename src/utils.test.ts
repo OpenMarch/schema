@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { OpenMarchSchema } from "./types";
-import { toCompressedOpenMarchSchema, toOpenMarchJson } from "./utils";
+import {
+	fromOpenMarchSchemaFile,
+	toCompressedOpenMarchSchema,
+	toOpenMarchFile,
+	toOpenMarchJson,
+} from "./utils";
 
 // Minimal valid schema matching OpenMarchSchema shape (same as schema.test.ts)
 const validSchema: OpenMarchSchema = {
@@ -106,5 +111,78 @@ describe("toCompressedOpenMarchSchema", () => {
 		const uncompressed = toOpenMarchJson(validSchema);
 		const uncompressedBytes = new TextEncoder().encode(uncompressed);
 		expect(compressed.length).toBeLessThan(uncompressedBytes.length);
+	});
+});
+
+describe("fromOpenMarchSchemaFile", () => {
+	test("parses raw JSON (.om) and returns validated schema", async () => {
+		const json = toOpenMarchJson(validSchema);
+		const buffer = new TextEncoder().encode(json).buffer;
+		const result = await fromOpenMarchSchemaFile(buffer);
+		expect(result).toEqual(validSchema);
+	});
+
+	test("parses gzipped JSON (.omz) and returns validated schema", async () => {
+		const compressed = await toCompressedOpenMarchSchema(validSchema);
+		const result = await fromOpenMarchSchemaFile(compressed.buffer);
+		expect(result).toEqual(validSchema);
+	});
+
+	test("detects gzip by magic bytes (1f 8b)", async () => {
+		const compressed = await toCompressedOpenMarchSchema(validSchema);
+		expect(compressed[0]).toBe(0x1f);
+		expect(compressed[1]).toBe(0x8b);
+		const result = await fromOpenMarchSchemaFile(compressed.buffer);
+		expect(result).toEqual(validSchema);
+	});
+});
+
+describe("toOpenMarchFile", () => {
+	test("compressed: false returns UTF-8 JSON bytes (`.om`)", async () => {
+		const result = await toOpenMarchFile(validSchema, { compressed: false });
+		expect(result).toBeInstanceOf(Uint8Array);
+		const decoded = new TextDecoder().decode(result);
+		expect(decoded).toBe(toOpenMarchJson(validSchema));
+	});
+
+	test("compressed: false output equals TextEncoder.encode(toOpenMarchJson(schema))", async () => {
+		const result = await toOpenMarchFile(validSchema, { compressed: false });
+		const expected = new Uint8Array(
+			new TextEncoder().encode(toOpenMarchJson(validSchema)),
+		);
+		expect(result).toEqual(expected);
+	});
+
+	test("compressed: true returns gzipped bytes (`.omz`)", async () => {
+		const result = await toOpenMarchFile(validSchema, { compressed: true });
+		expect(result).toBeInstanceOf(Uint8Array);
+		expect(result[0]).toBe(0x1f);
+		expect(result[1]).toBe(0x8b);
+	});
+
+	test("compressed: true output is smaller than compressed: false for typical schema", async () => {
+		const uncompressed = await toOpenMarchFile(validSchema, {
+			compressed: false,
+		});
+		const compressed = await toOpenMarchFile(validSchema, { compressed: true });
+		expect(compressed.length).toBeLessThan(uncompressed.length);
+	});
+
+	test("compressed: false round-trips with fromOpenMarchSchemaFile", async () => {
+		const bytes = await toOpenMarchFile(validSchema, { compressed: false });
+		const parsed = await fromOpenMarchSchemaFile(bytes.buffer);
+		expect(parsed).toEqual(validSchema);
+	});
+
+	test("compressed: true round-trips with fromOpenMarchSchemaFile", async () => {
+		const bytes = await toOpenMarchFile(validSchema, { compressed: true });
+		const parsed = await fromOpenMarchSchemaFile(bytes.buffer);
+		expect(parsed).toEqual(validSchema);
+	});
+
+	test("compressed: true matches toCompressedOpenMarchSchema output", async () => {
+		const fromFile = await toOpenMarchFile(validSchema, { compressed: true });
+		const fromCompressed = await toCompressedOpenMarchSchema(validSchema);
+		expect(fromFile).toEqual(fromCompressed);
 	});
 });
