@@ -1,20 +1,20 @@
-import { z } from "zod";
-import {
-  OpenMarchSchema,
-  ShowMetadataSchema,
-  PerformanceAreaSchema,
-  TempoSectionSchema,
-  MeasureSchema,
-  PageSchema,
-  PerformerSchema,
-  CoordinateSchema,
-  CheckpointSchema,
-  XCheckpointSchema,
-  YCheckpointSchema,
+import type { z } from "zod";
+import type {
+	CheckpointSchema,
+	CoordinateSchema,
+	MeasureSchema,
+	OpenMarchSchema as OpenMarchSchemaType,
+	PageSchema,
+	PerformanceAreaSchema,
+	PerformerSchema,
+	ShowMetadataSchema,
+	TempoSectionSchema,
+	XCheckpointSchema,
+	YCheckpointSchema,
 } from "./schema";
 
 // Infer TypeScript types from Zod schemas
-export type OpenMarchSchema = z.infer<typeof OpenMarchSchema>;
+export type OpenMarchSchema = z.infer<typeof OpenMarchSchemaType>;
 export type ShowMetadata = z.infer<typeof ShowMetadataSchema>;
 export type PerformanceArea = z.infer<typeof PerformanceAreaSchema>;
 export type TempoSection = z.infer<typeof TempoSectionSchema>;

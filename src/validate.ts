@@ -3,8 +3,8 @@ import { OpenMarchSchema } from "./schema";
 import type { OpenMarchSchema as OpenMarchSchemaType } from "./types";
 
 export type ValidationResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: z.ZodError };
+	| { success: true; data: T }
+	| { success: false; error: z.ZodError };
 
 /**
  * Parse and validate a JSON string into a type-safe OpenMarchSchema object.
@@ -14,8 +14,8 @@ export type ValidationResult<T> =
  * @throws {z.ZodError} If the data doesn't match the schema
  */
 export function parseOpenMarchSchema(jsonString: string): OpenMarchSchemaType {
-  const data = JSON.parse(jsonString);
-  return OpenMarchSchema.parse(data);
+	const data = JSON.parse(jsonString);
+	return OpenMarchSchema.parse(data);
 }
 
 /**
@@ -25,30 +25,30 @@ export function parseOpenMarchSchema(jsonString: string): OpenMarchSchemaType {
  * @returns A result object with success status and either data or error
  */
 export function safeParseOpenMarchSchema(
-  jsonString: string
+	jsonString: string,
 ): ValidationResult<OpenMarchSchemaType> {
-  try {
-    const data = JSON.parse(jsonString);
-    const result = OpenMarchSchema.safeParse(data);
-    if (result.success) {
-      return { success: true, data: result.data };
-    }
-    return { success: false, error: result.error };
-  } catch (e) {
-    if (e instanceof SyntaxError) {
-      return {
-        success: false,
-        error: new z.ZodError([
-          {
-            code: "custom",
-            path: [],
-            message: `Invalid JSON: ${e.message}`,
-          },
-        ]),
-      };
-    }
-    throw e;
-  }
+	try {
+		const data = JSON.parse(jsonString);
+		const result = OpenMarchSchema.safeParse(data);
+		if (result.success) {
+			return { success: true, data: result.data };
+		}
+		return { success: false, error: result.error };
+	} catch (e) {
+		if (e instanceof SyntaxError) {
+			return {
+				success: false,
+				error: new z.ZodError([
+					{
+						code: "custom",
+						path: [],
+						message: `Invalid JSON: ${e.message}`,
+					},
+				]),
+			};
+		}
+		throw e;
+	}
 }
 
 /**
@@ -58,7 +58,7 @@ export function safeParseOpenMarchSchema(
  * @throws {z.ZodError} If the data doesn't match the schema
  */
 export function validateOpenMarchData(data: unknown): OpenMarchSchemaType {
-  return OpenMarchSchema.parse(data);
+	return OpenMarchSchema.parse(data);
 }
 
 /**
@@ -68,9 +68,9 @@ export function validateOpenMarchData(data: unknown): OpenMarchSchemaType {
  * @returns A result object with success status and either data or error
  */
 export function safeValidateOpenMarchData(
-  data: unknown
+	data: unknown,
 ): ValidationResult<OpenMarchSchemaType> {
-  return OpenMarchSchema.safeParse(data);
+	return OpenMarchSchema.safeParse(data);
 }
 
 /**
@@ -79,8 +79,10 @@ export function safeValidateOpenMarchData(
  * @param data - The data to check
  * @returns True if the data is a valid OpenMarchSchema
  */
-export function isValidOpenMarchData(data: unknown): data is OpenMarchSchemaType {
-  return OpenMarchSchema.safeParse(data).success;
+export function isValidOpenMarchData(
+	data: unknown,
+): data is OpenMarchSchemaType {
+	return OpenMarchSchema.safeParse(data).success;
 }
 
 /**
@@ -89,8 +91,8 @@ export function isValidOpenMarchData(data: unknown): data is OpenMarchSchemaType
  * @returns An array of formatted error messages
  */
 export function formatValidationErrors(error: z.ZodError): string[] {
-  return error.issues.map((e) => {
-    const path = e.path.length > 0 ? `${e.path.join(".")}: ` : "";
-    return `${path}${e.message}`;
-  });
+	return error.issues.map((e) => {
+		const path = e.path.length > 0 ? `${e.path.join(".")}: ` : "";
+		return `${path}${e.message}`;
+	});
 }
