@@ -14,17 +14,18 @@
 	},
 	"module": "src/index.ts",
 	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"types": "dist/src/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/index.ts",
-			"types": "./dist/index.d.ts"
+			"import": "./dist/index.js",
+			"require": "./dist/index.js",
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/index.js"
 		}
 	},
 	"scripts": {
-		"build": "bun build ./src/index.ts --outdir ./dist --target node",
-		"build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
+		"build": "tsc && bun build ./src/index.ts --outdir ./dist --target node",
 		"generate-schema": "bun run ./scripts/generate-json-schema.ts",
 		"test": "bun test"
 	},

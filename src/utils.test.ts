@@ -124,7 +124,9 @@ describe("fromOpenMarchSchemaFile", () => {
 
 	test("parses gzipped JSON (.omz) and returns validated schema", async () => {
 		const compressed = await toCompressedOpenMarchSchema(validSchema);
-		const result = await fromOpenMarchSchemaFile(compressed.buffer);
+		const result = await fromOpenMarchSchemaFile(
+			compressed.buffer as ArrayBuffer,
+		);
 		expect(result).toEqual(validSchema);
 	});
 
@@ -132,7 +134,9 @@ describe("fromOpenMarchSchemaFile", () => {
 		const compressed = await toCompressedOpenMarchSchema(validSchema);
 		expect(compressed[0]).toBe(0x1f);
 		expect(compressed[1]).toBe(0x8b);
-		const result = await fromOpenMarchSchemaFile(compressed.buffer);
+		const result = await fromOpenMarchSchemaFile(
+			compressed.buffer as ArrayBuffer,
+		);
 		expect(result).toEqual(validSchema);
 	});
 });
@@ -170,13 +174,13 @@ describe("toOpenMarchFile", () => {
 
 	test("compressed: false round-trips with fromOpenMarchSchemaFile", async () => {
 		const bytes = await toOpenMarchFile(validSchema, { compressed: false });
-		const parsed = await fromOpenMarchSchemaFile(bytes.buffer);
+		const parsed = await fromOpenMarchSchemaFile(bytes.buffer as ArrayBuffer);
 		expect(parsed).toEqual(validSchema);
 	});
 
 	test("compressed: true round-trips with fromOpenMarchSchemaFile", async () => {
 		const bytes = await toOpenMarchFile(validSchema, { compressed: true });
-		const parsed = await fromOpenMarchSchemaFile(bytes.buffer);
+		const parsed = await fromOpenMarchSchemaFile(bytes.buffer as ArrayBuffer);
 		expect(parsed).toEqual(validSchema);
 	});
 
