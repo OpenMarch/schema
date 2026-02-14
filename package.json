@@ -1,6 +1,6 @@
 {
 	"name": "@openmarch/schema",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"description": "OpenMarch Data Format for storing and processing marching band, indoor, and drum corps drill shows",
 	"license": "Apache-2.0",
 	"homepage": "https://openmarch.com",
@@ -8,9 +8,6 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/OpenMarch/schema.git"
-	},
-	"publishConfig": {
-		"@openmarch:registry": "https://npm.pkg.github.com"
 	},
 	"module": "src/index.ts",
 	"main": "dist/index.js",
