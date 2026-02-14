@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { OpenMarchSchema } from "./schema";
-import type { OpenMarchSchema as OpenMarchSchemaType } from "./types";
+import { OpenMarchSchema, OpenMarchTempoSchema } from "./schema";
+import type {
+	OpenMarchSchema as OpenMarchSchemaType,
+	OpenMarchTempo,
+} from "./types";
 
 export type ValidationResult<T> =
 	| { success: true; data: T }
@@ -83,6 +86,85 @@ export function isValidOpenMarchData(
 	data: unknown,
 ): data is OpenMarchSchemaType {
 	return OpenMarchSchema.safeParse(data).success;
+}
+
+/**
+ * Parse and validate a JSON string into a type-safe OpenMarchTempo object.
+ * @param jsonString - The JSON string to parse and validate
+ * @returns The parsed and validated OpenMarchTempo object
+ * @throws {SyntaxError} If the JSON is invalid
+ * @throws {z.ZodError} If the data doesn't match the schema
+ */
+export function parseOpenMarchTempoSchema(jsonString: string): OpenMarchTempo {
+	const data = JSON.parse(jsonString);
+	return OpenMarchTempoSchema.parse(data);
+}
+
+/**
+ * Safely parse and validate a JSON string into a type-safe OpenMarchTempo object.
+ * Returns a result object instead of throwing errors.
+ * @param jsonString - The JSON string to parse and validate
+ * @returns A result object with success status and either data or error
+ */
+export function safeParseOpenMarchTempoSchema(
+	jsonString: string,
+): ValidationResult<OpenMarchTempo> {
+	try {
+		const data = JSON.parse(jsonString);
+		const result = OpenMarchTempoSchema.safeParse(data);
+		if (result.success) {
+			return { success: true, data: result.data };
+		}
+		return { success: false, error: result.error };
+	} catch (e) {
+		if (e instanceof SyntaxError) {
+			return {
+				success: false,
+				error: new z.ZodError([
+					{
+						code: "custom",
+						path: [],
+						message: `Invalid JSON: ${e.message}`,
+					},
+				]),
+			};
+		}
+		throw e;
+	}
+}
+
+/**
+ * Validate an already-parsed object against the OpenMarch Tempo schema.
+ * @param data - The object to validate
+ * @returns The validated OpenMarchTempo object
+ * @throws {z.ZodError} If the data doesn't match the schema
+ */
+export function validateOpenMarchTempoData(data: unknown): OpenMarchTempo {
+	return OpenMarchTempoSchema.parse(data);
+}
+
+/**
+ * Safely validate an already-parsed object against the OpenMarch Tempo schema.
+ * Returns a result object instead of throwing errors.
+ * @param data - The object to validate
+ * @returns A result object with success status and either data or error
+ */
+export function safeValidateOpenMarchTempoData(
+	data: unknown,
+): ValidationResult<OpenMarchTempo> {
+	return OpenMarchTempoSchema.safeParse(data);
+}
+
+/**
+ * Check if data is a valid OpenMarch Tempo schema object.
+ * Type guard function for use in conditionals.
+ * @param data - The data to check
+ * @returns True if the data is a valid OpenMarchTempo
+ */
+export function isValidOpenMarchTempoData(
+	data: unknown,
+): data is OpenMarchTempo {
+	return OpenMarchTempoSchema.safeParse(data).success;
 }
 
 /**

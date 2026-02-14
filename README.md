@@ -6,12 +6,13 @@ The schema follows a single-source-of-truth pattern where Zod schemas define all
 
 ## File Extensions
 
-The OpenMarch Public Schema uses three file formats for saving and sharing shows:
+The OpenMarch Public Schema uses these file formats for saving and sharing shows:
 
 | Extension | Name | Description |
 | --------- | ---- | ----------- |
 | `.om` | OpenMarch | Uncompressed JSON file containing show data |
 | `.omz` | OpenMarch Zipped | Compressed JSON file for smaller file sizes |
+| `.omt` | OpenMarch Tempo | Timing data only (metadata, pages, tempo, measures); no performers or coordinates |
 | `.omp` | OpenMarch Package (Coming soon) | Compressed archive containing show data plus audio files and images |
 
 > Note - the OpenMarch desktop app uses the `.dots` file extension which is not the same thing.
@@ -56,6 +57,22 @@ const bytes = await toOpenMarchFile(schema, { compressed: false }); // .om
 await Bun.write('show.omz', bytes);
 ```
 
+### Reading and writing OpenMarch Tempo (.omt) files
+
+The `.omt` format stores only timing data (metadata, pages, tempo sections, optional measures). Use it when you need to share or edit timing without performer or coordinate data.
+
+```typescript
+import { fromOpenMarchTempoFile, toOpenMarchTempoFile } from '@openmarch/schema';
+
+// Read .omt file (supports raw JSON or gzipped)
+const bytes = await file.arrayBuffer();
+const tempo = await fromOpenMarchTempoFile(bytes);
+
+// Write .omt file
+const out = await toOpenMarchTempoFile(tempo, { compressed: false });
+await Bun.write('show.omt', out);
+```
+
 ### Validating Show Data
 
 ```typescript
@@ -88,9 +105,30 @@ import { OpenMarchSchema, PerformerSchema, PageSchema } from '@openmarch/schema'
 const performer = PerformerSchema.parse(data);
 ```
 
+### Validating OpenMarch Tempo (.omt) data
+
+```typescript
+import {
+  parseOpenMarchTempoSchema,
+  safeParseOpenMarchTempoSchema,
+  isValidOpenMarchTempoData,
+} from '@openmarch/schema';
+
+// Throws on invalid data
+const tempo = parseOpenMarchTempoSchema(jsonString);
+
+// Returns { success: true, data } or { success: false, error }
+const result = safeParseOpenMarchTempoSchema(jsonString);
+
+// Type guard
+if (isValidOpenMarchTempoData(data)) {
+  // data is typed as OpenMarchTempo
+}
+```
+
 ### JSON Schema
 
-A generated JSON Schema is available at `schema.json` for use with other languages and tools.
+Generated JSON Schemas are available at `schema.json` (full show) and `schema-tempo.json` (tempo-only) for use with other languages and tools.
 
 ## Schema Structure
 
@@ -102,6 +140,16 @@ The main `OpenMarchSchema` contains:
 - **`pages`** - Set/page definitions with timing and beat indices
 - **`tempoSections`** - Tempo changes throughout the show
 - **`coordinates`** - Marcher positions in steps from center/front
+- **`measures`** - Optional measure markers with rehearsal marks
+
+### OpenMarch Tempo (.omt)
+
+The **OpenMarch Tempo** schema (`OpenMarchTempoSchema`) is a subset of the full schema that includes only timing-related data. It has the same field shapes and validation rules for those fields, but omits performers and coordinates.
+
+- **`omSchemaVersion`** - Schema version string (same as full schema)
+- **`metadata`** - Show settings including performance area configuration
+- **`pages`** - Set/page definitions with timing and beat indices
+- **`tempoSections`** - Tempo changes throughout the show
 - **`measures`** - Optional measure markers with rehearsal marks
 
 ### Coordinate System
@@ -130,5 +178,5 @@ The performance area defines the field layout including:
 bun install          # Install dependencies
 bun test             # Run tests
 bun run build        # Build to dist/
-bun run generate-schema  # Regenerate schema.json
+bun run generate-schema  # Regenerate schema.json and schema-tempo.json
 ```

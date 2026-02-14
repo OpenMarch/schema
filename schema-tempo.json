@@ -1,0 +1,202 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"type": "object",
+	"properties": {
+		"omSchemaVersion": {
+			"default": "0.1.0",
+			"type": "string"
+		},
+		"metadata": {
+			"type": "object",
+			"properties": {
+				"performanceArea": {
+					"type": "object",
+					"properties": {
+						"yOrigin": {
+							"type": "string",
+							"enum": ["front", "center"]
+						},
+						"inchesPerStep": {
+							"type": "number"
+						},
+						"xCheckpoints": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"terseName": {
+										"type": "string"
+									},
+									"useAsReference": {
+										"type": "boolean"
+									},
+									"fieldLabel": {
+										"type": "string"
+									},
+									"visible": {
+										"type": "boolean"
+									},
+									"stepsFromCenter": {
+										"type": "number"
+									}
+								},
+								"required": [
+									"name",
+									"terseName",
+									"useAsReference",
+									"visible",
+									"stepsFromCenter"
+								],
+								"additionalProperties": false
+							}
+						},
+						"yCheckpoints": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"terseName": {
+										"type": "string"
+									},
+									"useAsReference": {
+										"type": "boolean"
+									},
+									"fieldLabel": {
+										"type": "string"
+									},
+									"visible": {
+										"type": "boolean"
+									},
+									"stepsFromYOrigin": {
+										"type": "number"
+									}
+								},
+								"required": [
+									"name",
+									"terseName",
+									"useAsReference",
+									"visible",
+									"stepsFromYOrigin"
+								],
+								"additionalProperties": false
+							}
+						},
+						"widthFeet": {
+							"type": "number"
+						},
+						"heightFeet": {
+							"type": "number"
+						},
+						"useHashes": {
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"yOrigin",
+						"inchesPerStep",
+						"xCheckpoints",
+						"yCheckpoints",
+						"widthFeet",
+						"heightFeet",
+						"useHashes"
+					],
+					"additionalProperties": false
+				},
+				"createdAtUtc": {
+					"type": "string"
+				},
+				"audioOffsetSeconds": {
+					"type": "number"
+				},
+				"info": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"author": {
+							"type": "string"
+						},
+						"school": {
+							"type": "string"
+						},
+						"year": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": {}
+				}
+			},
+			"required": ["performanceArea", "createdAtUtc"],
+			"additionalProperties": false
+		},
+		"pages": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "number"
+					},
+					"startBeatIndex": {
+						"type": "number"
+					},
+					"isSubset": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "duration", "startBeatIndex", "name"],
+				"additionalProperties": false
+			}
+		},
+		"tempoSections": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"tempo": {
+						"type": "number"
+					},
+					"numberOfBeats": {
+						"type": "number"
+					}
+				},
+				"required": ["tempo", "numberOfBeats"],
+				"additionalProperties": false
+			}
+		},
+		"measures": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"startBeatIndex": {
+						"type": "number"
+					},
+					"name": {
+						"type": "string"
+					},
+					"rehearsalMark": {
+						"type": "string"
+					}
+				},
+				"required": ["startBeatIndex", "name"],
+				"additionalProperties": false
+			}
+		}
+	},
+	"required": ["omSchemaVersion", "metadata", "pages", "tempoSections"],
+	"additionalProperties": false
+}

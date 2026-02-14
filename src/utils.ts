@@ -1,5 +1,8 @@
-import { OpenMarchSchema as OpenMarchSchemaZod } from "./schema";
-import type { OpenMarchSchema } from "./types";
+import {
+	OpenMarchSchema as OpenMarchSchemaZod,
+	OpenMarchTempoSchema as OpenMarchTempoSchemaZod,
+} from "./schema";
+import type { OpenMarchSchema, OpenMarchTempo } from "./types";
 
 /** Gzip magic bytes (1f 8b) at the start of a file indicate gzip compression. */
 const GZIP_MAGIC = new Uint8Array([0x1f, 0x8b]);
@@ -94,4 +97,88 @@ export const fromOpenMarchSchemaFile = async (
 	}
 	const parsed = JSON.parse(json) as unknown;
 	return OpenMarchSchemaZod.parse(parsed);
+};
+
+/**
+ * Data for the `.omt` file format (OpenMarch Tempo)
+ *
+ * Converts an OpenMarch Tempo schema to a JSON string.
+ *
+ * @param schema - The OpenMarch Tempo schema to convert
+ * @returns The JSON string
+ */
+export const toOpenMarchTempoJson = (schema: OpenMarchTempo): string => {
+	return JSON.stringify({
+		schema: "https://openmarch.com/schema/0.1.0",
+		...schema,
+	});
+};
+
+/**
+ * Compresses an OpenMarch Tempo schema as gzip using the Web CompressionStream API.
+ * Returns the compressed bytes as a Uint8Array.
+ */
+export const toCompressedOpenMarchTempoSchema = async (
+	schema: OpenMarchTempo,
+): Promise<Uint8Array> => {
+	const json = toOpenMarchTempoJson(schema);
+	const readable = new ReadableStream({
+		start(controller) {
+			controller.enqueue(new TextEncoder().encode(json));
+			controller.close();
+		},
+	});
+	const compressed = readable.pipeThrough(new CompressionStream("gzip"));
+	const arrayBuffer = await new Response(compressed).arrayBuffer();
+	return new Uint8Array(arrayBuffer);
+};
+
+/**
+ * Returns bytes to write to an OpenMarch Tempo file (`.omt` or compressed).
+ * Use `compressed: false` for raw JSON `.omt`, `compressed: true` for gzipped.
+ *
+ * @param schema - The OpenMarch Tempo schema to serialize
+ * @param options.compressed - If true, return gzipped bytes; if false, return UTF-8 JSON `.omt`
+ * @returns Bytes to write (Uint8Array)
+ */
+export const toOpenMarchTempoFile = async (
+	schema: OpenMarchTempo,
+	options: { compressed: boolean },
+): Promise<Uint8Array> => {
+	if (options.compressed) {
+		return toCompressedOpenMarchTempoSchema(schema);
+	}
+	const json = toOpenMarchTempoJson(schema);
+	return new Uint8Array(new TextEncoder().encode(json));
+};
+
+/**
+ * Parses an OpenMarch Tempo file from bytes, supporting raw JSON and gzipped formats.
+ * Detects format via gzip magic bytes (1f 8b); if present, decompresses then parses JSON.
+ * Validates the result against the OpenMarch Tempo schema.
+ *
+ * @param data - File contents as ArrayBuffer (raw JSON or gzipped)
+ * @returns Parsed and validated OpenMarchTempo
+ * @throws {SyntaxError} If JSON is invalid
+ * @throws {z.ZodError} If the data doesn't match the schema
+ */
+export const fromOpenMarchTempoFile = async (
+	data: ArrayBuffer,
+): Promise<OpenMarchTempo> => {
+	let json: string;
+	if (isGzip(data)) {
+		const readable = new ReadableStream({
+			start(controller) {
+				controller.enqueue(new Uint8Array(data));
+				controller.close();
+			},
+		});
+		const decompressed = readable.pipeThrough(new DecompressionStream("gzip"));
+		const decompressedBuffer = await new Response(decompressed).arrayBuffer();
+		json = new TextDecoder().decode(decompressedBuffer);
+	} else {
+		json = new TextDecoder().decode(data);
+	}
+	const parsed = JSON.parse(json) as unknown;
+	return OpenMarchTempoSchemaZod.parse(parsed);
 };

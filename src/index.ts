@@ -1,12 +1,18 @@
 // Schema exports
 
 // JSON Schema exports
-export { getJsonSchema, getJsonSchemaString } from "./json-schema";
+export {
+	getJsonSchema,
+	getJsonSchemaString,
+	getOpenMarchTempoJsonSchema,
+	getOpenMarchTempoJsonSchemaString,
+} from "./json-schema";
 export {
 	CheckpointSchema,
 	CoordinateSchema,
 	MeasureSchema,
 	OpenMarchSchema,
+	OpenMarchTempoSchema,
 	PageSchema,
 	PerformanceAreaSchema,
 	PerformerSchema,
@@ -22,6 +28,7 @@ export type {
 	Coordinate,
 	Measure,
 	OpenMarchSchema as OpenMarchSchemaType,
+	OpenMarchTempo,
 	Page,
 	PerformanceArea,
 	Performer,
@@ -35,9 +42,14 @@ export * from "./utils";
 export {
 	formatValidationErrors,
 	isValidOpenMarchData,
+	isValidOpenMarchTempoData,
 	parseOpenMarchSchema,
+	parseOpenMarchTempoSchema,
 	safeParseOpenMarchSchema,
+	safeParseOpenMarchTempoSchema,
 	safeValidateOpenMarchData,
+	safeValidateOpenMarchTempoData,
 	type ValidationResult,
 	validateOpenMarchData,
+	validateOpenMarchTempoData,
 } from "./validate";

@@ -32,7 +32,8 @@
 	"files": [
 		"dist",
 		"src",
-		"schema.json"
+		"schema.json",
+		"schema-tempo.json"
 	],
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",

@@ -4,6 +4,7 @@ import type {
 	CoordinateSchema,
 	MeasureSchema,
 	OpenMarchSchema as OpenMarchSchemaType,
+	OpenMarchTempoSchema as OpenMarchTempoSchemaType,
 	PageSchema,
 	PerformanceAreaSchema,
 	PerformerSchema,
@@ -15,6 +16,7 @@ import type {
 
 // Infer TypeScript types from Zod schemas
 export type OpenMarchSchema = z.infer<typeof OpenMarchSchemaType>;
+export type OpenMarchTempo = z.infer<typeof OpenMarchTempoSchemaType>;
 export type ShowMetadata = z.infer<typeof ShowMetadataSchema>;
 export type PerformanceArea = z.infer<typeof PerformanceAreaSchema>;
 export type TempoSection = z.infer<typeof TempoSectionSchema>;

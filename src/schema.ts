@@ -210,5 +210,26 @@ export const OpenMarchSchema = z.object({
 	measures: z.array(MeasureSchema).optional(),
 });
 
+// ============================================================================
+// OPENMARCH TEMPO (.omt) - timing data only
+// ============================================================================
+
+export const OpenMarchTempoSchema = z.object({
+	/** Schema version for future compatibility */
+	omSchemaVersion: z.string().default(SCHEMA_VERSION),
+
+	/** Show metadata and settings */
+	metadata: ShowMetadataSchema,
+
+	/** All pages in the show */
+	pages: z.array(PageSchema),
+
+	/** All tempo sections in the show */
+	tempoSections: z.array(TempoSectionSchema),
+
+	/** All measures in the show */
+	measures: z.array(MeasureSchema).optional(),
+});
+
 // Re-export sub-schemas for convenience
 export { CheckpointSchema, XCheckpointSchema, YCheckpointSchema };
