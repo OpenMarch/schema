@@ -143,7 +143,7 @@ It's up to the developer how much control they want to give the user, but from O
 
 ### Measures
 
-The `measures` array contains a list of objects with a `startBeatIndex` and `name`.
+The `measures` array contains a list of objects with a `startBeatIndex`, `name`, and optionally `rehearsalMark`.
 The index is from the 0-based index of the beats from `tempoSections`.
 Note that since the first beat has a tempo of 0, we start the measures from index 1.
 
@@ -170,7 +170,9 @@ This is a simple example of six 4/4 measures -
     },
     {
       "startBeatIndex": 17,
-      "name": "Measure 5"
+      "name": "Measure 5",
+      // Optional rehearsal mark. Can be any string
+      "rehearsalMark": "A"
     },
     {
       "startBeatIndex": 21,
