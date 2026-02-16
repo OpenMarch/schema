@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OpenMarchSchema, OpenMarchTempoSchema } from "./schema";
+import { OpenMarchSchema, OpenMarchTempoDataSchema } from "./schema";
 
 /**
  * Get the JSON Schema representation of the OpenMarch schema.
@@ -20,13 +20,13 @@ export function getJsonSchemaString(indent = 2): string {
  * Get the JSON Schema representation of the OpenMarch Tempo (.omt) schema.
  * This can be used for validation in other languages or tools.
  */
-export function getOpenMarchTempoJsonSchema() {
-	return z.toJSONSchema(OpenMarchTempoSchema);
+export function getOpenMarchTempoDataJsonSchema() {
+	return z.toJSONSchema(OpenMarchTempoDataSchema);
 }
 
 /**
  * Get the OpenMarch Tempo JSON Schema as a formatted string.
  */
-export function getOpenMarchTempoJsonSchemaString(indent = 2): string {
-	return JSON.stringify(getOpenMarchTempoJsonSchema(), null, indent);
+export function getOpenMarchTempoDataJsonSchemaString(indent = 2): string {
+	return JSON.stringify(getOpenMarchTempoDataJsonSchema(), null, indent);
 }

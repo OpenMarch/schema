@@ -1,18 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import type { OpenMarchSchema, OpenMarchTempo } from "./types";
+import type { OpenMarchShowData, OpenMarchTempoData } from "./types";
 import {
 	fromOpenMarchSchemaFile,
-	fromOpenMarchTempoFile,
+	fromOpenMarchTempoDataFile,
 	toCompressedOpenMarchSchema,
-	toCompressedOpenMarchTempoSchema,
+	toCompressedOpenMarchTempoDataSchema,
 	toOpenMarchFile,
 	toOpenMarchJson,
-	toOpenMarchTempoFile,
-	toOpenMarchTempoJson,
+	toOpenMarchTempoDataFile,
+	toOpenMarchTempoDataJson,
 } from "./utils";
 
 // Minimal valid schema matching OpenMarchSchema shape (same as schema.test.ts)
-const validSchema: OpenMarchSchema = {
+const validSchema: OpenMarchShowData = {
 	omSchemaVersion: "1.0.0",
 	metadata: {
 		performanceArea: {
@@ -79,7 +79,7 @@ const validSchema: OpenMarchSchema = {
 };
 
 // Minimal valid OpenMarch Tempo schema (timing only)
-const validTempoSchema: OpenMarchTempo = {
+const validTempoSchema: OpenMarchTempoData = {
 	omSchemaVersion: "1.0.0",
 	metadata: validSchema.metadata,
 	pages: validSchema.pages,
@@ -203,9 +203,9 @@ describe("toOpenMarchFile", () => {
 	});
 });
 
-describe("toOpenMarchTempoJson", () => {
+describe("toOpenMarchTempoDataJson", () => {
 	test("returns a JSON string with schema URL and tempo data", () => {
-		const json = toOpenMarchTempoJson(validTempoSchema);
+		const json = toOpenMarchTempoDataJson(validTempoSchema);
 		expect(typeof json).toBe("string");
 		const parsed = JSON.parse(json);
 		expect(parsed.schema).toBe("https://openmarch.com/schema/0.1.0");
@@ -215,26 +215,28 @@ describe("toOpenMarchTempoJson", () => {
 	});
 });
 
-describe("toOpenMarchTempoFile", () => {
+describe("toOpenMarchTempoDataFile", () => {
 	test("compressed: false returns UTF-8 JSON bytes (`.omt`)", async () => {
-		const result = await toOpenMarchTempoFile(validTempoSchema, {
+		const result = await toOpenMarchTempoDataFile(validTempoSchema, {
 			compressed: false,
 		});
 		expect(result).toBeInstanceOf(Uint8Array);
 		const decoded = new TextDecoder().decode(result);
-		expect(decoded).toBe(toOpenMarchTempoJson(validTempoSchema));
+		expect(decoded).toBe(toOpenMarchTempoDataJson(validTempoSchema));
 	});
 
-	test("compressed: false round-trips with fromOpenMarchTempoFile", async () => {
-		const bytes = await toOpenMarchTempoFile(validTempoSchema, {
+	test("compressed: false round-trips with fromOpenMarchTempoDataFile", async () => {
+		const bytes = await toOpenMarchTempoDataFile(validTempoSchema, {
 			compressed: false,
 		});
-		const parsed = await fromOpenMarchTempoFile(bytes.buffer as ArrayBuffer);
+		const parsed = await fromOpenMarchTempoDataFile(
+			bytes.buffer as ArrayBuffer,
+		);
 		expect(parsed).toEqual(validTempoSchema);
 	});
 
 	test("compressed: true returns gzipped bytes", async () => {
-		const result = await toOpenMarchTempoFile(validTempoSchema, {
+		const result = await toOpenMarchTempoDataFile(validTempoSchema, {
 			compressed: true,
 		});
 		expect(result).toBeInstanceOf(Uint8Array);
@@ -242,26 +244,29 @@ describe("toOpenMarchTempoFile", () => {
 		expect(result[1]).toBe(0x8b);
 	});
 
-	test("compressed: true round-trips with fromOpenMarchTempoFile", async () => {
-		const bytes = await toOpenMarchTempoFile(validTempoSchema, {
+	test("compressed: true round-trips with fromOpenMarchTempoDataFile", async () => {
+		const bytes = await toOpenMarchTempoDataFile(validTempoSchema, {
 			compressed: true,
 		});
-		const parsed = await fromOpenMarchTempoFile(bytes.buffer as ArrayBuffer);
+		const parsed = await fromOpenMarchTempoDataFile(
+			bytes.buffer as ArrayBuffer,
+		);
 		expect(parsed).toEqual(validTempoSchema);
 	});
 });
 
-describe("fromOpenMarchTempoFile", () => {
+describe("fromOpenMarchTempoDataFile", () => {
 	test("parses raw JSON (.omt) and returns validated tempo schema", async () => {
-		const json = toOpenMarchTempoJson(validTempoSchema);
+		const json = toOpenMarchTempoDataJson(validTempoSchema);
 		const buffer = new TextEncoder().encode(json).buffer;
-		const result = await fromOpenMarchTempoFile(buffer);
+		const result = await fromOpenMarchTempoDataFile(buffer);
 		expect(result).toEqual(validTempoSchema);
 	});
 
 	test("parses gzipped JSON and returns validated tempo schema", async () => {
-		const compressed = await toCompressedOpenMarchTempoSchema(validTempoSchema);
-		const result = await fromOpenMarchTempoFile(
+		const compressed =
+			await toCompressedOpenMarchTempoDataSchema(validTempoSchema);
+		const result = await fromOpenMarchTempoDataFile(
 			compressed.buffer as ArrayBuffer,
 		);
 		expect(result).toEqual(validTempoSchema);

@@ -62,14 +62,14 @@ await Bun.write('show.omz', bytes);
 The `.omt` format stores only timing data (metadata, pages, tempo sections, optional measures). Use it when you need to share or edit timing without performer or coordinate data.
 
 ```typescript
-import { fromOpenMarchTempoFile, toOpenMarchTempoFile } from '@openmarch/schema';
+import { fromOpenMarchTempoDataFile, toOpenMarchTempoDataFile } from '@openmarch/schema';
 
 // Read .omt file (supports raw JSON or gzipped)
 const bytes = await file.arrayBuffer();
-const tempo = await fromOpenMarchTempoFile(bytes);
+const tempo = await fromOpenMarchTempoDataFile(bytes);
 
 // Write .omt file
-const out = await toOpenMarchTempoFile(tempo, { compressed: false });
+const out = await toOpenMarchTempoDataFile(tempo, { compressed: false });
 await Bun.write('show.omt', out);
 ```
 
@@ -109,20 +109,20 @@ const performer = PerformerSchema.parse(data);
 
 ```typescript
 import {
-  parseOpenMarchTempoSchema,
-  safeParseOpenMarchTempoSchema,
+  parseOpenMarchTempoDataSchema,
+  safeParseOpenMarchTempoDataSchema,
   isValidOpenMarchTempoData,
 } from '@openmarch/schema';
 
 // Throws on invalid data
-const tempo = parseOpenMarchTempoSchema(jsonString);
+const tempo = parseOpenMarchTempoDataSchema(jsonString);
 
 // Returns { success: true, data } or { success: false, error }
-const result = safeParseOpenMarchTempoSchema(jsonString);
+const result = safeParseOpenMarchTempoDataSchema(jsonString);
 
 // Type guard
 if (isValidOpenMarchTempoData(data)) {
-  // data is typed as OpenMarchTempo
+  // data is typed as OpenMarchTempoData
 }
 ```
 
@@ -144,7 +144,7 @@ The main `OpenMarchSchema` contains:
 
 ### OpenMarch Tempo (.omt)
 
-The **OpenMarch Tempo** schema (`OpenMarchTempoSchema`) is a subset of the full schema that includes only timing-related data. It has the same field shapes and validation rules for those fields, but omits performers and coordinates.
+The **OpenMarch Tempo** schema (`OpenMarchTempoDataSchema`) is a subset of the full schema that includes only timing-related data. It has the same field shapes and validation rules for those fields, but omits performers and coordinates.
 
 - **`omSchemaVersion`** - Schema version string (same as full schema)
 - **`metadata`** - Show settings including performance area configuration

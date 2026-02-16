@@ -80,10 +80,7 @@ export const PerformanceAreaSchema = z.object({
 // METADATA
 // ============================================================================
 
-export const ShowMetadataSchema = z.object({
-	/** Field configuration */
-	performanceArea: PerformanceAreaSchema,
-
+const BaseMetadataSchema = z.object({
 	/** UTC timestamp when this show was created */
 	createdAtUtc: z.string(),
 
@@ -100,6 +97,13 @@ export const ShowMetadataSchema = z.object({
 		.catchall(z.any())
 		.optional(),
 });
+
+export const ShowMetadataSchema = BaseMetadataSchema.extend({
+	/** Field configuration */
+	performanceArea: PerformanceAreaSchema,
+});
+
+export const TempoMetadataSchema = BaseMetadataSchema.extend({});
 
 // ============================================================================
 // TIMELINE
@@ -214,12 +218,12 @@ export const OpenMarchSchema = z.object({
 // OPENMARCH TEMPO (.omt) - timing data only
 // ============================================================================
 
-export const OpenMarchTempoSchema = z.object({
+export const OpenMarchTempoDataSchema = z.object({
 	/** Schema version for future compatibility */
 	omSchemaVersion: z.string().default(SCHEMA_VERSION),
 
 	/** Show metadata and settings */
-	metadata: ShowMetadataSchema,
+	metadata: TempoMetadataSchema,
 
 	/** All pages in the show */
 	pages: z.array(PageSchema),
