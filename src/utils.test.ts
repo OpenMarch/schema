@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import type { OpenMarchShowData, OpenMarchTempoData } from "./types";
 import {
 	fromOpenMarchSchemaFile,
 	fromOpenMarchTempoDataFile,
@@ -9,7 +8,8 @@ import {
 	toOpenMarchJson,
 	toOpenMarchTempoDataFile,
 	toOpenMarchTempoDataJson,
-} from "./utils";
+} from "./lib/utils";
+import type { OpenMarchShowData, OpenMarchTempoData } from "./types";
 
 // Minimal valid schema matching OpenMarchSchema shape (same as schema.test.ts)
 const validSchema: OpenMarchShowData = {

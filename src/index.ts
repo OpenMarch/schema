@@ -7,6 +7,8 @@ export {
 	getOpenMarchTempoDataJsonSchema,
 	getOpenMarchTempoDataJsonSchemaString,
 } from "./json-schema";
+export * from "./lib";
+export * from "./lib/utils";
 export {
 	CheckpointSchema,
 	CoordinateSchema,
@@ -37,7 +39,6 @@ export type {
 	XCheckpoint,
 	YCheckpoint,
 } from "./types";
-export * from "./utils";
 // Validation exports
 export {
 	formatValidationErrors,

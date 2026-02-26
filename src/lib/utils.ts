@@ -1,8 +1,8 @@
 import {
 	OpenMarchSchema as OpenMarchSchemaZod,
 	OpenMarchTempoDataSchema as OpenMarchTempoDataSchemaZod,
-} from "./schema";
-import type { OpenMarchShowData, OpenMarchTempoData } from "./types";
+} from "../schema";
+import type { OpenMarchShowData, OpenMarchTempoData, Page } from "../types";
 
 /** Gzip magic bytes (1f 8b) at the start of a file indicate gzip compression. */
 const GZIP_MAGIC = new Uint8Array([0x1f, 0x8b]);
@@ -183,4 +183,33 @@ export const fromOpenMarchTempoDataFile = async (
 	}
 	const parsed = JSON.parse(json) as unknown;
 	return OpenMarchTempoDataSchemaZod.parse(parsed);
+};
+
+/**
+ * Calculates the start and end timestamps for each page based on their duration.
+ *
+ * NOTE - the first pages always has a start and end timestamp of `[0,0]`
+ *
+ * @param sortedPages - Pages sorted by startBeatIndex
+ * @returns A record of page IDs to their start and end timestamps
+ */
+export const getPageTimestamps = (
+	sortedPages: Pick<Page, "id" | "duration">[],
+): Record<number, [startTimestamp: number, endTimestamp: number]> => {
+	let currentTimestamp = 0;
+	const pageTimestamps: Record<
+		number,
+		[startTimestamp: number, endTimestamp: number]
+	> = {};
+
+	pageTimestamps[0] = [0, 0];
+	for (let i = 1; i < sortedPages.length; i++) {
+		const page = sortedPages[i];
+		if (page === undefined) continue;
+
+		const pageDuration = page.duration;
+		pageTimestamps[i] = [currentTimestamp, currentTimestamp + pageDuration];
+		currentTimestamp += pageDuration;
+	}
+	return pageTimestamps;
 };
