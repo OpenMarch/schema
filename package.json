@@ -1,6 +1,6 @@
 {
 	"name": "@openmarch/schema",
-	"version": "0.3.6",
+	"version": "0.3.7",
 	"description": "OpenMarch Data Format for storing and processing marching band, indoor, and drum corps drill shows",
 	"license": "Apache-2.0",
 	"homepage": "https://openmarch.com",
@@ -9,20 +9,26 @@
 		"type": "git",
 		"url": "https://github.com/OpenMarch/schema.git"
 	},
-	"module": "src/index.ts",
-	"main": "dist/index.js",
-	"types": "dist/src/index.d.ts",
+	"module": "dist/index.js",
+	"main": "dist/index.cjs",
+	"types": "dist/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./dist/index.js",
-			"require": "./dist/index.js",
-			"types": "./dist/src/index.d.ts",
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"require": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.cjs"
+			},
+			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		}
 	},
 	"scripts": {
-		"build": "tsc && bun build ./src/index.ts --outdir ./dist --target node",
+		"build": "tsc && bun run scripts/build.ts",
 		"generate-schema": "bun run ./scripts/generate-json-schema.ts",
 		"test": "bun test"
 	},

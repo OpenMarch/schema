@@ -8,7 +8,6 @@ export {
 	getOpenMarchTempoDataJsonSchemaString,
 } from "./json-schema";
 export * from "./lib";
-export * from "./lib/utils";
 export {
 	CheckpointSchema,
 	CoordinateSchema,
