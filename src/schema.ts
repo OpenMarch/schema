@@ -5,7 +5,7 @@ import { z } from "zod";
 // ============================================================================
 
 /** Current schema version */
-export const SCHEMA_VERSION = "0.4.0" as const;
+export const SCHEMA_VERSION = "0.2.0" as const;
 
 // ============================================================================
 // CHECKPOINT
