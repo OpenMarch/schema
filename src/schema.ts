@@ -231,7 +231,7 @@ export const SectionPerformerAppearanceSchema =
 
 export const PerformerAppearanceShowDataSchema = z.object({
 	/** Default appearance for all performers in the show */
-	defaultAppearance: PerformerAppearanceSchema,
+	defaultAppearance: PerformerAppearanceSchema.optional(),
 
 	/**
 	 * Individual performer appearance data per-page. This appearance only applies to the given page.
@@ -241,14 +241,14 @@ export const PerformerAppearanceShowDataSchema = z.object({
 	 * This appearance takes precedence over section appearance or default appearance.
 	 * If this is not defined for a performer, fall back to section appearance, then default appearance.
 	 */
-	performers: z.array(IndividualPerformerAppearanceSchema),
+	performers: z.array(IndividualPerformerAppearanceSchema).optional(),
 
 	/**
 	 * Section performer appearance data. This appearance applies to performers for all pages in the show.
 	 *
 	 * This appearance takes precedence over default appearance. If this is not defined for a section, fall back to default appearance.
 	 */
-	sections: z.array(SectionPerformerAppearanceSchema),
+	sections: z.array(SectionPerformerAppearanceSchema).optional(),
 });
 
 // ============================================================================
@@ -266,7 +266,7 @@ export const OpenMarchSchema = z.object({
 	performers: z.array(PerformerSchema),
 
 	/** Performer appearance data */
-	performerAppearance: PerformerAppearanceShowDataSchema,
+	performerAppearance: PerformerAppearanceShowDataSchema.optional(),
 
 	/** All pages in the show */
 	pages: z.array(PageSchema),
