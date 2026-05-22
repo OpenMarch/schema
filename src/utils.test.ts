@@ -9,11 +9,25 @@ import {
 	toOpenMarchTempoDataFile,
 	toOpenMarchTempoDataJson,
 } from "./lib/utils";
+import { SCHEMA_VERSION } from "./schema";
 import type { OpenMarchShowData, OpenMarchTempoData } from "./types";
+
+const defaultPerformerAppearance = {
+	defaultAppearance: {
+		fillRgba: "rgba(100,100,100,0.98)",
+		strokeRgba: "rgba(0,0,0,1)",
+		strokeWidth: 1,
+		visible: true,
+		textVisible: true,
+		shape: "circle" as const,
+	},
+	performers: [],
+	sections: [],
+};
 
 // Minimal valid schema matching OpenMarchSchema shape (same as schema.test.ts)
 const validSchema: OpenMarchShowData = {
-	omSchemaVersion: "1.0.0",
+	omSchemaVersion: SCHEMA_VERSION,
 	metadata: {
 		performanceArea: {
 			yOrigin: "front",
@@ -76,12 +90,16 @@ const validSchema: OpenMarchShowData = {
 			ySteps: 16,
 		},
 	],
+	performerAppearance: defaultPerformerAppearance,
 };
 
 // Minimal valid OpenMarch Tempo schema (timing only)
 const validTempoSchema: OpenMarchTempoData = {
-	omSchemaVersion: "1.0.0",
-	metadata: validSchema.metadata,
+	omSchemaVersion: SCHEMA_VERSION,
+	metadata: {
+		createdAtUtc: validSchema.metadata.createdAtUtc,
+		info: validSchema.metadata.info,
+	},
 	pages: validSchema.pages,
 	tempoSections: validSchema.tempoSections,
 };
@@ -209,7 +227,7 @@ describe("toOpenMarchTempoDataJson", () => {
 		expect(typeof json).toBe("string");
 		const parsed = JSON.parse(json);
 		expect(parsed.schema).toBe("https://openmarch.com/schema/0.1.0");
-		expect(parsed.omSchemaVersion).toBe("1.0.0");
+		expect(parsed.omSchemaVersion).toBe(SCHEMA_VERSION);
 		expect(parsed.pages).toEqual(validTempoSchema.pages);
 		expect(parsed.tempoSections).toEqual(validTempoSchema.tempoSections);
 	});

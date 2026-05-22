@@ -8,13 +8,27 @@ import {
 	OpenMarchTempoDataSchema,
 	parseOpenMarchSchema,
 	parseOpenMarchTempoDataSchema,
+	SCHEMA_VERSION,
 	safeParseOpenMarchSchema,
 	safeParseOpenMarchTempoDataSchema,
 } from "./index";
 
+const defaultPerformerAppearance = {
+	defaultAppearance: {
+		fillRgba: "rgba(100,100,100,0.98)",
+		strokeRgba: "rgba(0,0,0,1)",
+		strokeWidth: 1,
+		visible: true,
+		textVisible: true,
+		shape: "circle" as const,
+	},
+	performers: [],
+	sections: [],
+};
+
 // Sample valid data
 const validShowData = {
-	omSchemaVersion: "1.0.0",
+	omSchemaVersion: SCHEMA_VERSION,
 	metadata: {
 		performanceArea: {
 			yOrigin: "front" as const,
@@ -77,12 +91,16 @@ const validShowData = {
 			ySteps: 16,
 		},
 	],
+	performerAppearance: defaultPerformerAppearance,
 };
 
 // Valid OpenMarch Tempo data (timing only; no performers or coordinates)
 const validTempoData = {
-	omSchemaVersion: "1.0.0",
-	metadata: validShowData.metadata,
+	omSchemaVersion: SCHEMA_VERSION,
+	metadata: {
+		createdAtUtc: validShowData.metadata.createdAtUtc,
+		info: validShowData.metadata.info,
+	},
 	pages: validShowData.pages,
 	tempoSections: validShowData.tempoSections,
 };
@@ -95,7 +113,7 @@ describe("OpenMarchSchema", () => {
 
 	test("rejects missing required fields", () => {
 		const invalidData = {
-			omSchemaVersion: "1.0.0",
+			omSchemaVersion: SCHEMA_VERSION,
 			// missing metadata, performers, pages, etc.
 		};
 		const result = OpenMarchSchema.safeParse(invalidData);
@@ -109,7 +127,7 @@ describe("OpenMarchSchema", () => {
 				...validShowData.metadata,
 				performanceArea: {
 					...validShowData.metadata.performanceArea,
-					yOrigin: "back", // should be "front"
+					yOrigin: "back", // must be "front" or "center"
 				},
 			},
 		};
@@ -158,7 +176,7 @@ describe("parseOpenMarchSchema", () => {
 	test("parses valid JSON string", () => {
 		const jsonString = JSON.stringify(validShowData);
 		const result = parseOpenMarchSchema(jsonString);
-		expect(result.omSchemaVersion).toBe("1.0.0");
+		expect(result.omSchemaVersion).toBe(SCHEMA_VERSION);
 		expect(result.performers.length).toBe(1);
 	});
 
@@ -178,7 +196,7 @@ describe("safeParseOpenMarchSchema", () => {
 		const result = safeParseOpenMarchSchema(jsonString);
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.data.omSchemaVersion).toBe("1.0.0");
+			expect(result.data.omSchemaVersion).toBe(SCHEMA_VERSION);
 		}
 	});
 
@@ -274,7 +292,7 @@ describe("OpenMarchTempoDataSchema", () => {
 
 	test("rejects missing required timing fields", () => {
 		const invalidData = {
-			omSchemaVersion: "1.0.0",
+			omSchemaVersion: SCHEMA_VERSION,
 			// missing metadata, pages, tempoSections
 		};
 		const result = OpenMarchTempoDataSchema.safeParse(invalidData);
@@ -286,7 +304,7 @@ describe("parseOpenMarchTempoDataSchema", () => {
 	test("parses valid JSON string", () => {
 		const jsonString = JSON.stringify(validTempoData);
 		const result = parseOpenMarchTempoDataSchema(jsonString);
-		expect(result.omSchemaVersion).toBe("1.0.0");
+		expect(result.omSchemaVersion).toBe(SCHEMA_VERSION);
 		expect(result.pages.length).toBe(1);
 		expect(result.tempoSections.length).toBe(1);
 	});
@@ -307,7 +325,7 @@ describe("safeParseOpenMarchTempoDataSchema", () => {
 		const result = safeParseOpenMarchTempoDataSchema(jsonString);
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.data.omSchemaVersion).toBe("1.0.0");
+			expect(result.data.omSchemaVersion).toBe(SCHEMA_VERSION);
 		}
 	});
 

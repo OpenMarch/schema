@@ -5,7 +5,7 @@ import { z } from "zod";
 // ============================================================================
 
 /** Current schema version */
-export const SCHEMA_VERSION = "0.1.0" as const;
+export const SCHEMA_VERSION = "0.4.0" as const;
 
 // ============================================================================
 // CHECKPOINT
@@ -188,6 +188,70 @@ export const CoordinateSchema = z.object({
 });
 
 // ============================================================================
+// PERFORMER APPEARANCE
+// ============================================================================
+
+const RgbaSchema = z
+	.string()
+	.regex(/^rgba\(\d{1,3},\d{1,3},\d{1,3},(?:0(?:\.\d+)?|1(?:\.0+)?)\)$/, {
+		message:
+			"Must be a valid rgba color string - e.g. 'rgba(255,255,255,0.98)' (alpha 0–1)",
+	});
+export const PerformerAppearanceSchema = z.object({
+	fillRgba: RgbaSchema,
+	strokeRgba: RgbaSchema,
+	strokeWidth: z.number().positive().default(1),
+	visible: z.boolean().default(true),
+	textVisible: z.boolean().default(true),
+	shape: z.enum(["circle", "square", "triangle", "cross"]),
+});
+
+/**
+ * Individual performer appearance data per-page. This appearance only applies to the given page.
+ *
+ * I.e. if `pageId=1`, this would apply from page 1 to the start of page 2.
+ *
+ * This appearance takes precedence over section appearance or default appearance.
+ */
+export const IndividualPerformerAppearanceSchema =
+	PerformerAppearanceSchema.extend({
+		marcherId: z.string(),
+		pageId: z.string(),
+	});
+
+/**
+ * Section performer appearance data. This appearance applies to performers for all pages in the show.
+ *
+ * This appearance takes precedence over default appearance.
+ */
+export const SectionPerformerAppearanceSchema =
+	PerformerAppearanceSchema.extend({
+		section: z.string(),
+	});
+
+export const PerformerAppearanceShowDataSchema = z.object({
+	/** Default appearance for all performers in the show */
+	defaultAppearance: PerformerAppearanceSchema,
+
+	/**
+	 * Individual performer appearance data per-page. This appearance only applies to the given page.
+	 *
+	 * I.e. if `pageId=1`, this would apply from page 1 to the start of page 2.
+	 *
+	 * This appearance takes precedence over section appearance or default appearance.
+	 * If this is not defined for a performer, fall back to section appearance, then default appearance.
+	 */
+	performers: z.array(IndividualPerformerAppearanceSchema),
+
+	/**
+	 * Section performer appearance data. This appearance applies to performers for all pages in the show.
+	 *
+	 * This appearance takes precedence over default appearance. If this is not defined for a section, fall back to default appearance.
+	 */
+	sections: z.array(SectionPerformerAppearanceSchema),
+});
+
+// ============================================================================
 // MAIN SCHEMA
 // ============================================================================
 
@@ -200,6 +264,9 @@ export const OpenMarchSchema = z.object({
 
 	/** All marchers in the show */
 	performers: z.array(PerformerSchema),
+
+	/** Performer appearance data */
+	performerAppearance: PerformerAppearanceShowDataSchema,
 
 	/** All pages in the show */
 	pages: z.array(PageSchema),
