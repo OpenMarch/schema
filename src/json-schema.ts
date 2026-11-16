@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { OpenMarchPlaybackShapeSchema } from "./playback/schema";
+import { SUPPORTED_PLAYBACK_VERSION_PATTERN } from "./playback/version";
 import { OpenMarchSchema, OpenMarchTempoDataSchema } from "./schema";
 
 /**
@@ -29,4 +31,30 @@ export function getOpenMarchTempoDataJsonSchema() {
  */
 export function getOpenMarchTempoDataJsonSchemaString(indent = 2): string {
 	return JSON.stringify(getOpenMarchTempoDataJsonSchema(), null, indent);
+}
+
+/**
+ * Get the JSON Schema representation of the OpenMarch playback (.ompb) schema.
+ *
+ * It describes the file's shape only: the checker's rules (coverage,
+ * continuity, page points, drawing ends, references) can't be written in JSON
+ * Schema, so validate with this package to apply them. Unknown fields are
+ * allowed, since readers must ignore fields they don't know.
+ */
+export function getOpenMarchPlaybackJsonSchema() {
+	const schema = z.toJSONSchema(OpenMarchPlaybackShapeSchema, { io: "input" });
+	// The version check is a refinement, which JSON Schema can't see; add it as
+	// a pattern so readers in other languages refuse versions they can't read.
+	const version = schema.properties?.ompbVersion;
+	if (version && typeof version === "object") {
+		version.pattern = SUPPORTED_PLAYBACK_VERSION_PATTERN;
+	}
+	return schema;
+}
+
+/**
+ * Get the OpenMarch playback JSON Schema as a formatted string.
+ */
+export function getOpenMarchPlaybackJsonSchemaString(indent = 2): string {
+	return JSON.stringify(getOpenMarchPlaybackJsonSchema(), null, indent);
 }

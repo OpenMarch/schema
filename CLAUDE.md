@@ -29,6 +29,7 @@ The codebase follows a single-source-of-truth pattern where Zod schemas define e
 - **`src/validate.ts`** - Validation utilities (parse, safeParse, type guards)
 - **`src/json-schema.ts`** - JSON Schema generation using `z.toJSONSchema()`
 - **`src/index.ts`** - Public API exports
+- **`src/playback/`** - The `.ompb` playback format: its own schema with its own copies of shared `.om` parts (`schema.ts`), version rules (`version.ts`), the checker for rules a shape can't express, with a stable code per problem (`check.ts`), and validation and file helpers (`validate.ts`). `index.ts` is the deliberately small public API. The JSON Schema is generated from the shape alone.
 
 When modifying the schema, edit `src/schema.ts` first, then run `bun run generate-schema` to update `schema.json`.
 
