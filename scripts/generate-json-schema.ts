@@ -6,6 +6,7 @@
 
 import {
 	getJsonSchemaString,
+	getOpenMarchPlaybackJsonSchemaString,
 	getOpenMarchTempoDataJsonSchemaString,
 } from "../src/json-schema";
 
@@ -19,3 +20,9 @@ const schemaTempoPath = new URL("../schema-tempo.json", import.meta.url)
 const schemaTempoContent = getOpenMarchTempoDataJsonSchemaString(2);
 await Bun.write(schemaTempoPath, schemaTempoContent);
 console.log(`JSON Schema (tempo) written to: ${schemaTempoPath}`);
+
+const schemaPlaybackPath = new URL("../schema-playback.json", import.meta.url)
+	.pathname;
+const schemaPlaybackContent = getOpenMarchPlaybackJsonSchemaString(2);
+await Bun.write(schemaPlaybackPath, schemaPlaybackContent);
+console.log(`JSON Schema (playback) written to: ${schemaPlaybackPath}`);

@@ -4,10 +4,13 @@
 export {
 	getJsonSchema,
 	getJsonSchemaString,
+	getOpenMarchPlaybackJsonSchema,
+	getOpenMarchPlaybackJsonSchemaString,
 	getOpenMarchTempoDataJsonSchema,
 	getOpenMarchTempoDataJsonSchemaString,
 } from "./json-schema";
 export * from "./lib";
+export * from "./playback";
 export {
 	CheckpointSchema,
 	CoordinateSchema,

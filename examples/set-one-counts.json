@@ -1,0 +1,188 @@
+{
+	"ompbVersion": "0.1.0",
+	"ticksPerBeat": 480,
+	"metadata": {
+		"createdAtUtc": "2026-11-16T12:00:00Z",
+		"info": {
+			"title": "Set 1 counts and step rates"
+		},
+		"performanceArea": {
+			"yOrigin": "front",
+			"inchesPerStep": 22.5,
+			"xCheckpoints": [
+				{
+					"name": "50 yard line",
+					"terseName": "50",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromCenter": 0
+				}
+			],
+			"yCheckpoints": [
+				{
+					"name": "Front sideline",
+					"terseName": "FSL",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromYOrigin": 0
+				}
+			],
+			"widthFeet": 360,
+			"heightFeet": 160,
+			"useHashes": true
+		}
+	},
+	"performers": [
+		{
+			"id": "1",
+			"label": "T1",
+			"section": "Trumpet"
+		},
+		{
+			"id": "2",
+			"label": "S1",
+			"section": "Snare"
+		}
+	],
+	"performerAppearance": {
+		"defaultAppearance": {
+			"fillRgba": "rgba(200,200,200,1)",
+			"strokeRgba": "rgba(0,0,0,1)",
+			"strokeWidth": 1,
+			"visible": true,
+			"textVisible": true,
+			"shape": "circle"
+		},
+		"sections": [
+			{
+				"section": "Snare",
+				"fillRgba": "rgba(0,120,255,1)",
+				"strokeRgba": "rgba(0,0,0,1)",
+				"strokeWidth": 1,
+				"visible": true,
+				"textVisible": true,
+				"shape": "square"
+			}
+		]
+	},
+	"tempoSections": [
+		{
+			"tempo": 160,
+			"numberOfBeats": 28
+		}
+	],
+	"measures": [
+		{
+			"startBeatIndex": 0,
+			"name": "1",
+			"rehearsalMark": "Intro"
+		},
+		{
+			"startBeatIndex": 4,
+			"name": "2"
+		},
+		{
+			"startBeatIndex": 8,
+			"name": "3"
+		},
+		{
+			"startBeatIndex": 12,
+			"name": "4",
+			"rehearsalMark": "A"
+		},
+		{
+			"startBeatIndex": 16,
+			"name": "5"
+		},
+		{
+			"startBeatIndex": 18,
+			"name": "6"
+		},
+		{
+			"startBeatIndex": 22,
+			"name": "7"
+		},
+		{
+			"startBeatIndex": 26,
+			"name": "8"
+		}
+	],
+	"pages": [
+		{
+			"id": "s1",
+			"name": "Set 1",
+			"startBeatIndex": 0,
+			"counts": 4,
+			"paths": {}
+		},
+		{
+			"id": "s2",
+			"name": "Set 2",
+			"startBeatIndex": 4,
+			"counts": 8,
+			"paths": {
+				"1": "M 0 0 L 8 0"
+			}
+		},
+		{
+			"id": "s2a",
+			"name": "Set 2A",
+			"startBeatIndex": 12,
+			"counts": 6,
+			"isSubset": true,
+			"paths": {
+				"1": "M 8 0 L 8 6"
+			}
+		},
+		{
+			"id": "s3",
+			"name": "Set 3",
+			"startBeatIndex": 18,
+			"counts": 6,
+			"paths": {
+				"1": "M 8 6 L 0 0"
+			}
+		}
+	],
+	"moves": [
+		{
+			"marcherId": "1",
+			"ticks": [0, 1920],
+			"xy": [0, 0, 0, 0]
+		},
+		{
+			"marcherId": "1",
+			"ticksPerStep": 480,
+			"ticks": [1920, 3840],
+			"xy": [0, 0, 4, 0]
+		},
+		{
+			"marcherId": "1",
+			"ticksPerStep": 240,
+			"ticks": [3840, 5760],
+			"xy": [4, 0, 8, 0]
+		},
+		{
+			"marcherId": "1",
+			"ticksPerStep": 160,
+			"ticks": [5760, 8640],
+			"xy": [8, 0, 8, 6]
+		},
+		{
+			"marcherId": "1",
+			"ticksPerStep": 480,
+			"ticks": [8640, 11520],
+			"xy": [8, 6, 0, 0]
+		},
+		{
+			"marcherId": "1",
+			"ticks": [11520, 13440],
+			"xy": [0, 0, 0, 0]
+		},
+		{
+			"marcherId": "2",
+			"ticks": [0, 1920, 5760, 8640, 11520, 13440],
+			"xy": [-4, 2, -4, 2, -4, 2, -4, 2, -4, 2, -4, 2]
+		}
+	]
+}
