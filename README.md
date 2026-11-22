@@ -35,6 +35,8 @@ The **OpenMarch Tempo** schema (`OpenMarchTempoDataSchema`) is a subset of the f
 
 ### OpenMarch Playback (.ompb)
 
+> **Experimental.** `.ompb` may change or be retired: OpenMarch may instead add exact curved paths to `.om`, which would let viewer apps read `.om` directly. Don't rely on it in released apps yet. See [issue #1](https://github.com/OpenMarch/schema/issues/1).
+
 The **OpenMarch Playback** schema (`OpenMarchPlaybackSchema`) is the playback copy of a show, for viewer apps. Everything is worked out ahead of time by the exporter, so a reader needs only lookups and straight-line blending between points. It describes the real motion, including curved paths, which `.om` can't. It is never edited, always gzip-compressed, and has its own version field. The full design is in [issue #1](https://github.com/OpenMarch/schema/issues/1).
 
 - **`ompbVersion`** - Playback format version, separate from `omSchemaVersion`

@@ -1,5 +1,8 @@
 // Public API for the .ompb playback format. Kept small on purpose: everything
 // here is hard to change once released.
+//
+// EXPERIMENTAL: .ompb may change or be retired if exact curved paths are added
+// to .om instead. See issue #1.
 export type { PlaybackIssue, PlaybackIssueCode } from "./check";
 export { OpenMarchPlaybackSchema } from "./schema";
 export type {
