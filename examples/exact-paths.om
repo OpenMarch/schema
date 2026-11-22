@@ -41,6 +41,11 @@
 			"id": 2,
 			"label": "T1",
 			"section": "Trumpet"
+		},
+		{
+			"id": 3,
+			"label": "M1",
+			"section": "Mellophone"
 		}
 	],
 	"pages": [
@@ -109,6 +114,24 @@
 			"pageId": "3",
 			"xSteps": 16,
 			"ySteps": 50
+		},
+		{
+			"marcherId": "3",
+			"pageId": "1",
+			"xSteps": -16,
+			"ySteps": 30
+		},
+		{
+			"marcherId": "3",
+			"pageId": "2",
+			"xSteps": -16,
+			"ySteps": 40
+		},
+		{
+			"marcherId": "3",
+			"pageId": "3",
+			"xSteps": -24,
+			"ySteps": 40
 		}
 	],
 	"exactPaths": [
@@ -223,6 +246,38 @@
 					},
 					{
 						"tick": 3840,
+						"u": 1
+					}
+				]
+			}
+		},
+		{
+			"marcherId": "2",
+			"startTick": 6240,
+			"endTick": 8160,
+			"path": {
+				"v": 1,
+				"from": [
+					0,
+					50
+				],
+				"shapes": [
+					{
+						"kind": "arc",
+						"to": [
+							16,
+							50
+						],
+						"bend": -0.25
+					}
+				],
+				"keys": [
+					{
+						"tick": 0,
+						"u": 0
+					},
+					{
+						"tick": 1920,
 						"u": 1
 					}
 				]

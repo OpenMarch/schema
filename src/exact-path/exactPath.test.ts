@@ -123,6 +123,26 @@ describe("pieces", () => {
 		}
 	});
 
+	it("a nearly straight arc keeps its precision", () => {
+		// the apex is bend·c off the chord's midpoint; a huge radius mustn't lose it
+		for (const bend of [1e-6, 1e-12, 1e-16, 5e-324, -1e-300]) {
+			const path: ExactPath = {
+				v: 1,
+				from: [-40, 10],
+				shapes: [{ kind: "arc", to: [40, 10], bend }],
+				keys: [
+					{ tick: 0, u: 0 },
+					{ tick: 960, u: 1 },
+				],
+			};
+			expect(checkExactPath(path)).toEqual([]);
+			const player = exactPlayer(path);
+			expect(Math.abs(player.length - 80)).toBeLessThan(1e-9);
+			expect(d2(player.pointAt(480), [0, 10 + bend * 80])).toBeLessThan(1e-12);
+			expect(Math.abs(player.pointAt(240)[0] + 20)).toBeLessThan(1e-9);
+		}
+	});
+
 	it("a cubic is timed by its true length, not by its parameter", () => {
 		const path: ExactPath = {
 			v: 1,
@@ -453,7 +473,7 @@ describe("Appendix M QA", () => {
 });
 
 describe("same answers as OpenMarch's packages/core", () => {
-	it(`matches exactPointAt on ${parity.cases.length} shared paths`, () => {
+	it(`matches exactPointAt on ${parity.cases.length} shared paths, within 1e-9 of a step`, () => {
 		expect(parity.cases.length).toBeGreaterThan(10);
 		for (const c of parity.cases) {
 			const path = c.path as unknown as ExactPath;
@@ -461,7 +481,9 @@ describe("same answers as OpenMarch's packages/core", () => {
 			const player = exactPlayer(path);
 			for (const [tick, x, y] of c.samples as [number, number, number][]) {
 				const got = player.pointAt(tick);
-				if (d2(got, [x, y]) > 1e-12)
+				// this copy plays arcs from the chord, core from the centre: they
+				// agree to about 1e-11 of a step on real arcs
+				if (d2(got, [x, y]) > 1e-9)
 					throw new Error(`${c.name} at tick ${tick}: ${got} vs ${[x, y]}`);
 			}
 		}

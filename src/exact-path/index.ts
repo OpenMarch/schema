@@ -28,6 +28,7 @@ export {
 export {
 	createExactPathReader,
 	type ExactPathReader,
+	type ExactPathShow,
 } from "./reader";
 export {
 	ExactArcSchema,

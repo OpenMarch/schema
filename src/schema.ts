@@ -283,10 +283,12 @@ export const OpenMarchSchema = z.object({
 
 	/**
 	 * Exact paths (since schema 0.3.0): the real walk of a marcher during a
-	 * move, curves included, as shapes plus timing keys. Optional. Between a
-	 * path's `startTick` and `endTick` the marcher follows it; everywhere else,
-	 * and in readers that don't know this field, the marcher walks a straight
-	 * line between sets as before.
+	 * move, curves included, as shapes plus timing keys. Optional. In a page
+	 * (the walk into a set) that has an exact path for the marcher, the marcher
+	 * follows it between its `startTick` and `endTick` and stands still on the
+	 * page's other counts (at the end of the path before, or the start of the
+	 * page's first path). In a page without one, and in readers that don't know
+	 * this field, the marcher walks a straight line between sets as before.
 	 *
 	 * Coordinates are in steps on the same axes as `coordinates`: x from the
 	 * center of the field (negative to the audience's left), y from the y-origin

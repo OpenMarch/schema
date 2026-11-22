@@ -329,7 +329,12 @@ The positive and negative directions are the same as an algebraic coordinate pla
 
 ### Exact paths
 
-`exactPaths` (optional, since schema `0.3.0`) stores how a marcher really walks during a move, curves and speed changes included, so a reader can play a show exactly as OpenMarch does without OpenMarch's path engine. Between a path's `startTick` and `endTick` the marcher follows it. Everywhere else, and in readers that don't know the field, the marcher walks a straight line between sets as before. Files without the field are unchanged and still valid.
+`exactPaths` (optional, since schema `0.3.0`) stores how a marcher really walks during a move, curves and speed changes included, so a reader can play a show exactly as OpenMarch does without OpenMarch's path engine. Readers that don't know the field draw straight lines between sets, as before. Files without the field are unchanged and still valid.
+
+Where the marcher is, page by page (a page is the walk into a set, from its `startBeatIndex` to the next page's):
+
+- **A page with an exact path for the marcher:** between a path's `startTick` and `endTick` the marcher follows it. On the page's other counts the marcher **stands still**: at the end of the path before, or, before the page's first path, at that path's start. OpenMarch writes no path for a hold, so "4 counts in place, then a 4-count curve" is one path over the last 4 counts.
+- **A page with no exact path for the marcher:** a straight line between the sets, as before.
 
 The format comes from OpenMarch's ADR 0018 and the rules (EP-1 to EP-6, EP-R) from its timeline spec, Appendix M. This package is the shared copy: use its functions instead of writing the math yourself.
 
@@ -358,13 +363,14 @@ Each entry belongs to one marcher (`marcherId`, the same ids as `coordinates`) a
 - There are **480 ticks per beat** (`TICKS_PER_BEAT`), the MIDI PPQ that DAWs use.
 - Ticks count from the start of the show, on the same beat scale as `startBeatIndex`: beat `b` is tick `b × 480`. A walk into a page usually starts at `startBeatIndex × 480` and ends where the next page starts.
 - The path's own key ticks count from `startTick`, so `endTick` is `startTick` plus the last key's tick.
+- A path may start or end anywhere, even in another page than the one it starts in. Its first point is where the marcher is when it starts, and its last where the marcher is when it ends.
 
 #### The path
 
 A path starts at `from` and continues through `shapes`, each starting where the last one ended:
 
 - **`points`**: straight lines through a list of points. Each point is a corner; a single straight leg is a list of one point.
-- **`arc`**: a circular arc to `to`. `bend` is the signed sagitta over the chord: the arc's middle is `M + bend·c·n`, with `M` the chord's midpoint, `c` its length and `n` the chord direction turned +90°. `0 < |bend| ≤ 1/2`, so at most a half turn.
+- **`arc`**: a circular arc to `to`. `bend` is the signed sagitta over the chord: the arc's middle is `M + bend·c·n`, with `M` the chord's midpoint, `c` its length and `n = (−dy, dx)/c` the chord direction turned +90°. With `.om`'s y up the field, a positive `bend` on a chord along +x bows toward the back. `0 < |bend| ≤ 1/2`, so at most a half turn.
 - **`cubic`**: a cubic Bézier curve to `to`, through the controls `c1` and `c2`.
 
 Every straight leg, arc and cubic is one **piece**, counted from 0 across the path. **`keys`** say when the marcher is where: at `tick` the marcher is at place `u`, the piece number plus the share of that piece's length (`1.5` is halfway along the second piece; the end is the number of pieces). Between keys the marcher walks at a steady speed, measured along the real curve: a cubic by its true length, not by its Bézier parameter. Two keys with the same `u` are a hold.
@@ -375,7 +381,7 @@ Points are in steps on the same axes as `coordinates`: x from the center of the 
 
 #### Rules
 
-Validating a show applies these rules. Each problem's message starts with the rule's id; problems from the rule checks also carry `params.rule`, and their `path` points at the field.
+Validating a show applies these rules. Each break of a rule has a message starting with the rule's id, and its `path` points at the field. Problems found by the rule checks also carry `params.rule`. Data of the wrong shape (a missing field, an unknown `kind`, a point that isn't `[x, y]`) gets Zod's usual shape errors. `schema.json` carries the limits a JSON Schema can express (lengths, whole ticks, the `bend` range); the rest need this package.
 
 | Rule | |
 | --- | --- |
@@ -396,18 +402,21 @@ Validating a show applies these rules. Each problem's message starts with the ru
 ```typescript
 import { createExactPathReader, exactPlayer, TICKS_PER_BEAT } from '@openmarch/schema';
 
-// A whole show: by marcher and show tick (fractional ticks are fine)
-const reader = createExactPathReader(show.exactPaths ?? []);
-const xy = reader.positionAt('1', beat * TICKS_PER_BEAT); // [x, y], or undefined: draw a straight line
+// A whole show: by marcher and show tick (fractional ticks are fine).
+// Follows the paths and stands still on a page's uncovered counts.
+const reader = createExactPathReader(show);
+const xy = reader.positionAt('1', beat * TICKS_PER_BEAT); // [x, y], or undefined: no path this page, draw a straight line
 
 // One path: ticks from the path's own start
-const player = exactPlayer(show.exactPaths[0].path);
-player.pointAt(1920);
+for (const entry of show.exactPaths ?? []) {
+  const player = exactPlayer(entry.path);
+  player.pointAt(1920);
+}
 ```
 
 Building a player measures the path, so build it once and call `pointAt` for each frame. `createExactPathReader` does this for you.
 
-[`examples/exact-paths.om`](examples/exact-paths.om) has a show with one path of each shape, a hold and a straight move with no exact path.
+[`examples/exact-paths.om`](examples/exact-paths.om) has a show with one path of each shape, a hold inside a path, a path that starts after 4 counts standing still, and a marcher with no exact paths.
 
 ### Performance Area
 

@@ -393,13 +393,18 @@
 				"type": "object",
 				"properties": {
 					"marcherId": {
-						"type": "string"
+						"type": "string",
+						"description": "The marcher who walks it: the same ids as coordinates"
 					},
 					"startTick": {
-						"type": "number"
+						"type": "integer",
+						"minimum": 0,
+						"description": "When the move starts: whole ticks from the start of the show, 480 per beat, on the same beat scale as startBeatIndex (beat b is tick b × 480). The path's key ticks count from here (EP-P1)"
 					},
 					"endTick": {
-						"type": "number"
+						"type": "integer",
+						"minimum": 0,
+						"description": "When the move ends: startTick plus the path's last key tick (EP-P2)"
 					},
 					"path": {
 						"type": "object",
@@ -417,7 +422,11 @@
 									{
 										"type": "number"
 									}
-								]
+								],
+								"minItems": 2,
+								"maxItems": 2,
+								"items": false,
+								"description": "Where the walk starts, [x, y] in steps"
 							},
 							"shapes": {
 								"type": "array",
@@ -441,8 +450,14 @@
 															{
 																"type": "number"
 															}
-														]
-													}
+														],
+														"minItems": 2,
+														"maxItems": 2,
+														"items": false,
+														"description": "[x, y] in steps"
+													},
+													"minItems": 1,
+													"description": "Straight lines through these points: each is a corner, the last is the shape's end (EP-2)"
 												}
 											},
 											"required": ["kind", "points"],
@@ -464,10 +479,20 @@
 														{
 															"type": "number"
 														}
-													]
+													],
+													"minItems": 2,
+													"maxItems": 2,
+													"items": false,
+													"description": "[x, y] in steps"
 												},
 												"bend": {
-													"type": "number"
+													"type": "number",
+													"minimum": -0.5,
+													"maximum": 0.5,
+													"not": {
+														"const": 0
+													},
+													"description": "Signed sagitta over chord, 0 < |bend| ≤ 1/2 (EP-3). The arc's middle is M + bend·c·n: M the chord's midpoint, c its length, n = (−dy, dx)/c the chord direction turned +90°. With .om's y up the field, a positive bend on a chord along +x bows toward the back. In a y-down system (OpenMarch on screen, SVG), negate bend along with y."
 												}
 											},
 											"required": ["kind", "to", "bend"],
@@ -489,7 +514,11 @@
 														{
 															"type": "number"
 														}
-													]
+													],
+													"minItems": 2,
+													"maxItems": 2,
+													"items": false,
+													"description": "[x, y] in steps"
 												},
 												"c2": {
 													"type": "array",
@@ -500,7 +529,11 @@
 														{
 															"type": "number"
 														}
-													]
+													],
+													"minItems": 2,
+													"maxItems": 2,
+													"items": false,
+													"description": "[x, y] in steps"
 												},
 												"to": {
 													"type": "array",
@@ -511,14 +544,20 @@
 														{
 															"type": "number"
 														}
-													]
+													],
+													"minItems": 2,
+													"maxItems": 2,
+													"items": false,
+													"description": "[x, y] in steps"
 												}
 											},
 											"required": ["kind", "c1", "c2", "to"],
 											"additionalProperties": false
 										}
 									]
-								}
+								},
+								"minItems": 1,
+								"description": "Each shape starts where the last one ended (EP-2)"
 							},
 							"keys": {
 								"type": "array",
@@ -526,15 +565,21 @@
 									"type": "object",
 									"properties": {
 										"tick": {
-											"type": "number"
+											"type": "integer",
+											"minimum": 0,
+											"description": "Whole ticks from the move's start, 480 per beat (EP-5)"
 										},
 										"u": {
-											"type": "number"
+											"type": "number",
+											"minimum": 0,
+											"description": "The place: piece number plus the share of that piece's length, 0 to the piece count (EP-5)"
 										}
 									},
 									"required": ["tick", "u"],
 									"additionalProperties": false
-								}
+								},
+								"minItems": 2,
+								"description": "Timing: first {tick: 0, u: 0}, last u is the piece count, ticks strictly increase, u never decreases; steady speed between keys (EP-5)"
 							}
 						},
 						"required": ["v", "from", "shapes", "keys"],
@@ -543,7 +588,8 @@
 				},
 				"required": ["marcherId", "startTick", "endTick", "path"],
 				"additionalProperties": false
-			}
+			},
+			"description": "Exact paths: a marcher's real walk during a move, placed by start and end tick. In a page (the walk into a set) with an exact path for the marcher, the marcher follows it and stands still on the page's other counts; in a page without one, it walks a straight line between sets. Coordinates are steps on the same axes as coordinates (y up the field). Rules EP-1 to EP-6 and EP-P1 to EP-P3 apply; see the README."
 		}
 	},
 	"required": [

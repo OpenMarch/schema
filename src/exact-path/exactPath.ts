@@ -30,9 +30,13 @@ export interface ExactPoints {
 
 /**
  * A circular arc to `to`. `bend` is the signed sagitta over the chord: the apex
- * is `M + bend·c·n`, with `M` the chord's midpoint, `c` its length and `n` the
- * chord direction turned +90° in the path's own axes. `0 < |bend| ≤ 1/2` (at
- * most a half turn).
+ * is `M + bend·c·n`, with `M` the chord's midpoint, `c` its length and
+ * `n = (−dy, dx)/c` the chord direction turned +90° in the path's own axes.
+ * `0 < |bend| ≤ 1/2` (at most a half turn).
+ *
+ * In a `.om` file y points up the field, so a positive `bend` on a chord along
+ * +x bows toward the back. Converting to y down (OpenMarch on screen, SVG)
+ * negates `bend` along with every y.
  */
 export interface ExactArc {
 	kind: "arc";
@@ -155,22 +159,49 @@ export function arcCircle(from: XY, to: XY, bend: number): ArcCircle | null {
 	};
 }
 
+/**
+ * `sin(h·f) / sin(h)` for `0 ≤ f ≤ 1`, kept accurate as `h` goes to 0 (where
+ * both sines underflow toward 0, or below the smallest normal number).
+ */
+function sineRatio(h: number, f: number): number {
+	if (h < 1e-4) return f * (1 + (h * h * (1 - f * f)) / 6);
+	return Math.sin(h * f) / Math.sin(h);
+}
+
+/** `sin(h) / h`, kept accurate as `h` goes to 0. */
+function sinOver(h: number): number {
+	return h < 1e-4 ? 1 - (h * h) / 6 : Math.sin(h) / h;
+}
+
+/**
+ * EP-3 played from the chord rather than the circle's centre, so a nearly
+ * straight arc (a huge radius) loses no precision: the point at share `f` is
+ * `c · sin(θf/2) / sin(θ/2)` from the start, in the chord's direction turned
+ * toward the apex by `θ(1 − f)/2`. The length `r·θ` is `c · (θ/2) / sin(θ/2)`.
+ */
 function arcPiece(from: XY, to: XY, bend: number): ExactPiece | null {
-	const circle = arcCircle(from, to, bend);
-	if (!circle) return null;
-	const { center, radius, startAngle, sweep } = circle;
+	const c = hyp(from, to);
+	const k = Math.abs(bend);
+	if (!(c > 0) || !(k > 0) || k > 0.5) return null;
+	const half = 2 * Math.atan(2 * k);
+	const turn = Math.sign(bend) * half;
+	const ux = (to[0] - from[0]) / c;
+	const uy = (to[1] - from[1]) / c;
 	return {
 		kind: "arc",
 		from,
 		to,
-		length: radius * Math.abs(sweep),
+		length: c / sinOver(half),
 		pointAt: (f) => {
 			if (f <= 0) return from;
 			if (f >= 1) return to;
-			const a = startAngle + sweep * f;
+			const d = c * sineRatio(half, f);
+			const a = turn * (1 - f);
+			const cos = Math.cos(a);
+			const sin = Math.sin(a);
 			return [
-				center[0] + radius * Math.cos(a),
-				center[1] + radius * Math.sin(a),
+				from[0] + d * (ux * cos - uy * sin),
+				from[1] + d * (ux * sin + uy * cos),
 			];
 		},
 	};
@@ -428,6 +459,8 @@ export function checkExactPath(path: ExactPath): ExactPathProblem[] {
 		const pieces = exactPieces(path);
 		const length = pieces ? pieces.reduce((s, p) => s + p.length, 0) : 0;
 		if (!(length >= EXACT_MIN_LENGTH)) add("EP-6", "the path goes nowhere");
+		else if (!Number.isFinite(length))
+			add("EP-6", "the path's length is not a finite number");
 	}
 	return problems;
 }
@@ -450,7 +483,11 @@ export interface ExactPlayer {
 	pointAtPlace(u: number): XY;
 	/** The distance at `tick` (EP-R step 2), clamped to the keys */
 	distanceAtTick(tick: number): number;
-	/** EP-R: the point at `tick` (fractional ticks allowed) */
+	/**
+	 * EP-R: the point at `tick` (fractional ticks allowed). Outside the move
+	 * it gives the nearer end; the spec says the path doesn't place the marcher
+	 * there, so callers decide what happens before and after.
+	 */
 	pointAt(tick: number): XY;
 }
 

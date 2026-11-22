@@ -2,7 +2,7 @@
 
 ## Exact paths in `.om`
 
-`exact-paths.om` is a `.om` show with `exactPaths`: two marchers over three sets. Marcher 1 walks a half circle into set 2, then holds for 2 counts and walks a corner into set 3. Marcher 2 walks a cubic curve into set 2 and has no exact path into set 3, so a reader draws a straight line there. The tests check that it validates and that each path starts and ends on the marcher's sets.
+`exact-paths.om` is a `.om` show with `exactPaths`: three marchers over three sets. Marcher 1 walks a half circle into set 2, then holds for 2 counts and walks a corner into set 3 (one path, with a hold inside it). Marcher 2 walks a cubic curve into set 2, then stands on set 2 for 4 counts, which no path covers, and walks an arc into set 3 over the last 4. Marcher 3 has no exact paths, so a reader draws straight lines. The tests check that it validates and that each path starts and ends on the marcher's sets.
 
 ## Example `.ompb` files
 
