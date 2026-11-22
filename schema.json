@@ -599,6 +599,5 @@
 		"pages",
 		"tempoSections",
 		"coordinates"
-	],
-	"additionalProperties": false
+	]
 }

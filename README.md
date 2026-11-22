@@ -579,6 +579,8 @@ if (isValidOpenMarchTempoData(data)) {
 
 Generated JSON Schemas are available at `schema.json` (full show), `schema-tempo.json` (tempo-only) and `schema-playback.json` (`.ompb`) for use with other languages and tools. `schema-playback.json` describes the shape only: the checker's rules need this package.
 
+`schema.json` and `schema-tempo.json` allow fields they don't know at the top level (and, for tempo, in `metadata`), as this package's reader does, so files from a newer version still validate. Fields inside known objects stay strict.
+
 ## Development
 
 ```bash

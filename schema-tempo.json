@@ -34,8 +34,7 @@
 					"additionalProperties": {}
 				}
 			},
-			"required": ["createdAtUtc"],
-			"additionalProperties": false
+			"required": ["createdAtUtc"]
 		},
 		"pages": {
 			"type": "array",
@@ -98,6 +97,5 @@
 			}
 		}
 	},
-	"required": ["omSchemaVersion", "metadata", "pages", "tempoSections"],
-	"additionalProperties": false
+	"required": ["omSchemaVersion", "metadata", "pages", "tempoSections"]
 }
