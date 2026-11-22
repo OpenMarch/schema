@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { ExactPathListSchema } from "./exact-path/schema";
 
 // ============================================================================
 // VERSION
 // ============================================================================
 
 /** Current schema version */
-export const SCHEMA_VERSION = "0.2.0" as const;
+export const SCHEMA_VERSION = "0.3.0" as const;
 
 // ============================================================================
 // CHECKPOINT
@@ -279,6 +280,26 @@ export const OpenMarchSchema = z.object({
 
 	/** All measures in the show */
 	measures: z.array(MeasureSchema).optional(),
+
+	/**
+	 * Exact paths (since schema 0.3.0): the real walk of a marcher during a
+	 * move, curves included, as shapes plus timing keys. Optional. Between a
+	 * path's `startTick` and `endTick` the marcher follows it; everywhere else,
+	 * and in readers that don't know this field, the marcher walks a straight
+	 * line between sets as before.
+	 *
+	 * Coordinates are in steps on the same axes as `coordinates`: x from the
+	 * center of the field (negative to the audience's left), y from the y-origin
+	 * toward the back of the field (from the front sideline when `yOrigin` is
+	 * `"front"`). That y points up the field, the opposite of OpenMarch's
+	 * on-screen y (down): converting between the two negates each y and also
+	 * each arc's `bend`, because flipping y mirrors which side the arc bows to.
+	 *
+	 * Each path is placed by its own start and end tick, not by a page, so it
+	 * stays correct when page boundaries move. Rules EP-1 to EP-6 and EP-P1 to
+	 * EP-P3 apply; see the README.
+	 */
+	exactPaths: ExactPathListSchema.optional(),
 });
 
 // ============================================================================

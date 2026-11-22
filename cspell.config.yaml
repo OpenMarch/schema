@@ -4,5 +4,6 @@ words:
   - ompb
   - rgba
   - openmarch
+  - retime
 ignorePaths:
   - node_modules

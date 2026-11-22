@@ -1,5 +1,6 @@
 // Schema exports
 
+export * from "./exact-path";
 // JSON Schema exports
 export {
 	getJsonSchema,
