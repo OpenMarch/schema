@@ -33,6 +33,22 @@ The **OpenMarch Tempo** schema (`OpenMarchTempoDataSchema`) is a subset of the f
 - **`tempoSections`** - Tempo changes throughout the show
 - **`measures`** - Optional measure markers with rehearsal marks
 
+### OpenMarch Playback (.ompb)
+
+> **Experimental.** `.ompb` may change or be retired: OpenMarch may instead add exact curved paths to `.om`, which would let viewer apps read `.om` directly. Don't rely on it in released apps yet. See [issue #1](https://github.com/OpenMarch/schema/issues/1).
+
+The **OpenMarch Playback** schema (`OpenMarchPlaybackSchema`) is the playback copy of a show, for viewer apps. Everything is worked out ahead of time by the exporter, so a reader needs only lookups and straight-line blending between points. It describes the real motion, including curved paths, which `.om` can't. It is never edited, always gzip-compressed, and has its own version field. The full design is in [issue #1](https://github.com/OpenMarch/schema/issues/1).
+
+- **`ompbVersion`** - Playback format version, separate from `omSchemaVersion`
+- **`ticksPerBeat`** - Each beat is split into this many ticks (the exporter writes 480); every time in `moves` is a whole number of ticks
+- **`metadata`**, **`performers`**, **`performerAppearance`**, **`tempoSections`**, **`measures`** - As in `.om`, except marcher IDs are text everywhere and there is no zero-length first beat (beat 0 is the first counted beat, and every tempo is above 0)
+- **`pages`** - In show order. Each page has `startBeatIndex` and `counts`, the counts to get to that set, and `paths`, an SVG drawing per marcher of the walk into that set, for display only
+- **`moves`** - Each marcher's motion for the whole show: `ticks` and interleaved `xy` points in field steps, straight lines at an even speed between points, plus an optional `ticksPerStep` step rate
+
+Validating `.ompb` data also runs the checker, which enforces the rules a shape can't express: each marcher's moves cover the whole show end to end with no gaps, overlaps or jumps; every page start and end is a point; marchers hold on set 1 during any counts it has, and after the last set; the first page has no drawings; drawings start and end within 0.02 of a step (straight-line distance) of the marcher's points; pages chain together; measures are in order; and every ID refers to something real.
+
+`.ompb` has its own copies of the parts it shares with `.om`, so changing `.om` never changes it. Display-only options that may grow (such as a marcher's `shape`) accept any text, and readers fall back for values they don't know. Fields the exporter always writes are required, so readers never need defaults. Unknown fields are allowed but dropped when read, so a tool that rewrites a file with an older package loses fields it doesn't know.
+
 ### Tempo Data
 
 ### Beats
@@ -327,6 +343,7 @@ The OpenMarch Public Schema uses these file formats for saving and sharing shows
 | `.om` | OpenMarch | Uncompressed JSON file containing show data |
 | `.omz` | OpenMarch Zipped | Compressed JSON file for smaller file sizes |
 | `.omt` | OpenMarch Tempo | Timing data only (metadata, pages, tempo, measures); no performers or coordinates |
+| `.ompb` | OpenMarch Playback | Gzipped playback copy of a show for viewer apps: per-marcher moves and per-page path drawings |
 | `.omp` | OpenMarch Package (Coming soon) | Compressed archive containing show data plus audio files and images |
 
 > Note - the OpenMarch desktop app uses the `.dots` file extension which is not the same thing.
@@ -387,6 +404,32 @@ const out = await toOpenMarchTempoDataFile(tempo, { compressed: false });
 await Bun.write('show.omt', out);
 ```
 
+### Reading and writing OpenMarch Playback (.ompb) files
+
+`.ompb` files are always gzipped when written. Reading detects gzip, so plain JSON also works. Both directions validate against the schema and every checker rule, so a file that breaks a rule is never written.
+
+```typescript
+import { fromOpenMarchPlaybackFile, toOpenMarchPlaybackFile } from '@openmarch/schema';
+
+const playback = await fromOpenMarchPlaybackFile(await file.arrayBuffer());
+
+const bytes = await toOpenMarchPlaybackFile(playback);
+await Bun.write('show.ompb', bytes);
+```
+
+[`examples/`](examples/) has valid `.ompb` files (gzipped, plus a readable `.json` copy of each) for testing a reader in any language.
+
+To check data without throwing, use `safeValidateOpenMarchPlaybackData(data)`. It returns `{ success: true, data }` or `{ success: false, issues }`, where each issue has a stable `code` (such as `coverage.gap` or `point.missingAtPage`), a `path` into the file, a `message`, and the `marcherId` when the problem is about one marcher. Match on `code`, not on `message`. The throwing functions throw a `PlaybackValidationError` with the same `issues`.
+
+```typescript
+import { safeValidateOpenMarchPlaybackData } from '@openmarch/schema';
+
+const result = safeValidateOpenMarchPlaybackData(data);
+if (!result.success) {
+  for (const issue of result.issues) console.log(issue.code, issue.marcherId, issue.message);
+}
+```
+
 ### Validating Show Data
 
 ```typescript
@@ -442,7 +485,7 @@ if (isValidOpenMarchTempoData(data)) {
 
 ### JSON Schema
 
-Generated JSON Schemas are available at `schema.json` (full show) and `schema-tempo.json` (tempo-only) for use with other languages and tools.
+Generated JSON Schemas are available at `schema.json` (full show), `schema-tempo.json` (tempo-only) and `schema-playback.json` (`.ompb`) for use with other languages and tools. `schema-playback.json` describes the shape only: the checker's rules need this package.
 
 ## Development
 
@@ -450,5 +493,6 @@ Generated JSON Schemas are available at `schema.json` (full show) and `schema-te
 bun install          # Install dependencies
 bun test             # Run tests
 bun run build        # Build to dist/
-bun run generate-schema  # Regenerate schema.json and schema-tempo.json
+bun run generate-schema  # Regenerate schema.json, schema-tempo.json and schema-playback.json
+bun run generate-examples  # Regenerate the example .ompb files in examples/
 ```

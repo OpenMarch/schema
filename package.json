@@ -30,12 +30,15 @@
 	"scripts": {
 		"build": "tsc && bun run scripts/build.ts",
 		"generate-schema": "bun run ./scripts/generate-json-schema.ts",
+		"generate-examples": "bun run ./scripts/generate-playback-examples.ts",
 		"test": "bun test"
 	},
 	"files": [
 		"dist",
 		"schema.json",
-		"schema-tempo.json"
+		"schema-tempo.json",
+		"schema-playback.json",
+		"examples"
 	],
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",

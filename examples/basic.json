@@ -1,0 +1,149 @@
+{
+	"ompbVersion": "0.1.0",
+	"ticksPerBeat": 480,
+	"metadata": {
+		"createdAtUtc": "2026-11-16T12:00:00Z",
+		"performanceArea": {
+			"yOrigin": "front",
+			"inchesPerStep": 22.5,
+			"xCheckpoints": [
+				{
+					"name": "50 yard line",
+					"terseName": "50",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromCenter": 0
+				}
+			],
+			"yCheckpoints": [
+				{
+					"name": "Front sideline",
+					"terseName": "FSL",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromYOrigin": 0
+				}
+			],
+			"widthFeet": 360,
+			"heightFeet": 160,
+			"useHashes": true
+		}
+	},
+	"performers": [
+		{
+			"id": "12",
+			"label": "B12",
+			"section": "Baritone"
+		},
+		{
+			"id": "7",
+			"label": "T7",
+			"section": "Trumpet"
+		}
+	],
+	"performerAppearance": {
+		"performers": [
+			{
+				"marcherId": "12",
+				"pageId": "p4",
+				"fillRgba": "rgba(255,0,0,1)",
+				"strokeRgba": "rgba(0,0,0,1)",
+				"strokeWidth": 1,
+				"visible": true,
+				"textVisible": true,
+				"shape": "circle"
+			}
+		]
+	},
+	"tempoSections": [
+		{
+			"tempo": 120,
+			"numberOfBeats": 32
+		},
+		{
+			"tempo": 90,
+			"numberOfBeats": 4
+		}
+	],
+	"measures": [
+		{
+			"startBeatIndex": 0,
+			"name": "1"
+		},
+		{
+			"startBeatIndex": 4,
+			"name": "2",
+			"rehearsalMark": "A"
+		}
+	],
+	"pages": [
+		{
+			"id": "p1",
+			"name": "Set 1",
+			"startBeatIndex": 0,
+			"counts": 0,
+			"paths": {}
+		},
+		{
+			"id": "p2",
+			"name": "Set 2",
+			"startBeatIndex": 0,
+			"counts": 8,
+			"paths": {
+				"7": "M 0 0 L 8 0"
+			}
+		},
+		{
+			"id": "p3",
+			"name": "Set 3",
+			"startBeatIndex": 8,
+			"counts": 8,
+			"paths": {}
+		},
+		{
+			"id": "p4",
+			"name": "Set 4",
+			"startBeatIndex": 16,
+			"counts": 8,
+			"paths": {
+				"12": "M 4 10 C 6 14 10 16 12 14"
+			}
+		},
+		{
+			"id": "p5",
+			"name": "Set 5",
+			"startBeatIndex": 24,
+			"counts": 8,
+			"paths": {}
+		}
+	],
+	"moves": [
+		{
+			"marcherId": "12",
+			"ticks": [0, 3840, 7680],
+			"xy": [4, 10, 4, 10, 4, 10]
+		},
+		{
+			"marcherId": "7",
+			"ticksPerStep": 480,
+			"ticks": [0, 3840],
+			"xy": [0, 0, 8, 0]
+		},
+		{
+			"marcherId": "12",
+			"ticksPerStep": 480,
+			"ticks": [7680, 7920, 8160, 11520],
+			"xy": [4, 10, 4.6, 10.9, 5.4, 11.7, 12, 14]
+		},
+		{
+			"marcherId": "7",
+			"ticks": [3840, 7680, 11520, 15360, 17280],
+			"xy": [8, 0, 8, 0, 8, 0, 8, 0, 8, 0]
+		},
+		{
+			"marcherId": "12",
+			"ticks": [11520, 15360, 17280],
+			"xy": [12, 14, 12, 14, 12, 14]
+		}
+	]
+}
