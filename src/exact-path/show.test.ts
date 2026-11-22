@@ -241,6 +241,75 @@ describe("playing a show's exact paths", () => {
 		expect(reader.positionAt("2", 960)).toBeUndefined();
 	});
 
+	it("stands between two paths in one page, and plays fractional ticks", () => {
+		const twoInOne = createExactPathReader({
+			pages,
+			exactPaths: [
+				entry({ startTick: 480, endTick: 1440 }),
+				entry({
+					startTick: 1920,
+					endTick: 2400,
+					path: {
+						...walk,
+						from: [8, 0],
+						shapes: [{ kind: "points", points: [[8, 8]] }],
+						keys: [
+							{ tick: 0, u: 0 },
+							{ tick: 480, u: 1 },
+						],
+					},
+				}),
+			],
+		});
+		expect(twoInOne.positionAt("1", 1700)).toEqual([8, 0]);
+		// a quarter of a tick past a key: steady speed, 8 steps per 960 or 480 ticks
+		const close = (got: XY | undefined, want: XY) => {
+			const [x, y] = got ?? [Number.NaN, Number.NaN];
+			expect(Math.hypot(x - want[0], y - want[1])).toBeLessThan(1e-12);
+		};
+		close(twoInOne.positionAt("1", 720.5), [(240.5 / 960) * 8, 0]);
+		close(twoInOne.positionAt("1", 2160.25), [8, (240.25 / 480) * 8]);
+	});
+
+	it("takes pages and paths in time order, whatever their order in the list", () => {
+		const shuffled = createExactPathReader({
+			pages: [9, 0, 5, 1].map((startBeatIndex) => ({ startBeatIndex })),
+			exactPaths: [
+				entry({
+					startTick: 5280,
+					endTick: 6240,
+					path: {
+						...walk,
+						from: [8, 8],
+						shapes: [{ kind: "points", points: [[0, 8]] }],
+					},
+				}),
+				entry({ startTick: 480, endTick: 1440 }),
+			],
+		});
+		for (const tick of [0, 480, 960, 1500, 2401, 4320, 5000, 5760, 7000])
+			expect(shuffled.positionAt("1", tick)).toEqual(
+				createExactPathReader({
+					pages,
+					exactPaths: [
+						entry({ startTick: 480, endTick: 1440 }),
+						entry({
+							startTick: 5280,
+							endTick: 6240,
+							path: {
+								...walk,
+								from: [8, 8],
+								shapes: [{ kind: "points", points: [[0, 8]] }],
+							},
+						}),
+					],
+				}).positionAt("1", tick),
+			);
+		// sorted, the walk into set 2 stands at its end until set 3's page starts
+		expect(shuffled.positionAt("1", 1500)).toEqual([8, 0]);
+		expect(shuffled.positionAt("1", 5000)).toEqual([8, 8]);
+	});
+
 	it("a path that crosses into the next page makes that page stand after it", () => {
 		const crossing = createExactPathReader({
 			pages,

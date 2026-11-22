@@ -358,7 +358,7 @@ The format comes from OpenMarch's ADR 0018 and the rules (EP-1 to EP-6, EP-R) fr
 
 #### Placing a path in time
 
-Each entry belongs to one marcher (`marcherId`, the same ids as `coordinates`) and carries its own **start and end tick**. It isn't tied to a page, so it stays correct when page boundaries move.
+Each entry belongs to one marcher (`marcherId`, the same ids as `coordinates`) and carries its own **start and end tick**. It isn't tied to a page: when a page boundary moves, the path itself stays where it is in time. Which counts around it are holds can change, though, since that depends on which page they fall in (see above).
 
 - There are **480 ticks per beat** (`TICKS_PER_BEAT`), the MIDI PPQ that DAWs use.
 - Ticks count from the start of the show, on the same beat scale as `startBeatIndex`: beat `b` is tick `b × 480`. A walk into a page usually starts at `startBeatIndex × 480` and ends where the next page starts.
@@ -390,7 +390,7 @@ Validating a show applies these rules. Each break of a rule has a message starti
 | EP-3 | An arc has `0 < \|bend\| ≤ 1/2` and doesn't end where it starts. |
 | EP-4 | A cubic's length is its true arc length. |
 | EP-5 | At least two keys. The first is `{tick: 0, u: 0}`; the last key's `u` is the number of pieces. Ticks are whole and strictly increase; `u` never decreases. |
-| EP-6 | The path goes somewhere (its length isn't 0). |
+| EP-6 | The path goes somewhere: its length is at least 10⁻⁹ (`EXACT_MIN_LENGTH`) and finite. |
 | EP-P1 | `startTick` is a whole number, 0 or more. |
 | EP-P2 | `endTick` is `startTick` plus the last key's tick. |
 | EP-P3 | One marcher's paths don't overlap in time. One may start on the tick another ends. |

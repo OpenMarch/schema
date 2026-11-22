@@ -9,7 +9,7 @@ import type { ExactPathEntry } from "./schema";
 /** What {@link createExactPathReader} needs from a show. */
 export interface ExactPathShow {
 	pages: readonly { startBeatIndex: number }[];
-	exactPaths?: readonly ExactPathEntry[];
+	exactPaths?: readonly ExactPathEntry[] | undefined;
 }
 
 /** Plays a show's exact paths by marcher and show tick. */
@@ -38,7 +38,9 @@ const play = (placed: Placed, tick: number): XY => {
 /**
  * Get a show's exact paths ready to play (EP-R). Pages are the walks into each
  * set: a page runs from its `startBeatIndex` to the next page's (the last page
- * runs on to the end of the show). Each path is measured the first time it's
+ * runs on to the end of the show). Pages are taken in `startBeatIndex` order,
+ * whatever their order in the list. Ticks before the first page, or a show with
+ * no pages, count as one more page. Each path is measured the first time it's
  * needed, so building this is cheap. Pass validated data: a path that breaks a
  * rule throws when it's first played.
  */

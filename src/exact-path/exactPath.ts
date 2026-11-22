@@ -133,7 +133,12 @@ export interface ArcCircle {
 	sweep: number;
 }
 
-/** EP-3. null when the arc breaks the rule (chord 0, or `bend` out of range). */
+/**
+ * EP-3: the arc's circle. null when the arc breaks the rule (chord 0, or
+ * `bend` out of range). The player doesn't use it: for a nearly straight arc
+ * the radius is huge (infinite at the smallest bends) and the centre loses
+ * precision, so check `radius` is finite before relying on it.
+ */
 export function arcCircle(from: XY, to: XY, bend: number): ArcCircle | null {
 	const c = hyp(from, to);
 	const k = Math.abs(bend);

@@ -102,7 +102,7 @@ export const ExactPathSchema = z
 
 /**
  * One exact path in a show, placed in time on its own: it doesn't depend on
- * pages, so it stays put when a page boundary moves.
+ * pages, so the path stays where it is in time when a page boundary moves.
  */
 export const ExactPathEntrySchema = z.object({
 	marcherId: z.string().meta({

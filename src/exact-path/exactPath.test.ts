@@ -416,6 +416,18 @@ describe("Appendix M QA", () => {
 				],
 			}),
 		).toEqual(["EP-6"]);
+		// a length that overflows to infinity
+		expect(
+			rules({
+				v: 1,
+				from: [-1e308, -1e308],
+				shapes: [{ kind: "points", points: [[1e308, 1e308]] }],
+				keys: [
+					{ tick: 0, u: 0 },
+					{ tick: 10, u: 1 },
+				],
+			}),
+		).toEqual(["EP-6"]);
 		// a player refuses a broken path, naming the rule
 		expect(() => exactPlayer(arc(0))).toThrow("EP-3");
 	});

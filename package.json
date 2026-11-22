@@ -28,7 +28,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc && bun run scripts/build.ts",
+		"build": "bun -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json && bun run scripts/build.ts",
+		"prepublishOnly": "bun test && bun run build",
 		"generate-schema": "bun run ./scripts/generate-json-schema.ts",
 		"generate-examples": "bun run ./scripts/generate-playback-examples.ts",
 		"test": "bun test"

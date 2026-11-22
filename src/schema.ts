@@ -297,9 +297,10 @@ export const OpenMarchSchema = z.object({
 	 * on-screen y (down): converting between the two negates each y and also
 	 * each arc's `bend`, because flipping y mirrors which side the arc bows to.
 	 *
-	 * Each path is placed by its own start and end tick, not by a page, so it
-	 * stays correct when page boundaries move. Rules EP-1 to EP-6 and EP-P1 to
-	 * EP-P3 apply; see the README.
+	 * Each path is placed by its own start and end tick, not by a page, so the
+	 * path stays where it is in time when a page boundary moves (though which
+	 * uncovered counts are holds follows the pages). Rules EP-1 to EP-6 and
+	 * EP-P1 to EP-P3 apply; see the README.
 	 */
 	exactPaths: ExactPathListSchema.optional(),
 });
