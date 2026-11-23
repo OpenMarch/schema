@@ -331,12 +331,12 @@ The positive and negative directions are the same as an algebraic coordinate pla
 
 `exactPaths` (optional, since schema `0.3.0`) stores how a marcher really walks during a move, curves and speed changes included, so a reader can play a show exactly as OpenMarch does without OpenMarch's path engine. Readers that don't know the field draw straight lines between sets, as before. Files without the field are unchanged and still valid.
 
-Where the marcher is, page by page (a page is the walk into a set, from its `startBeatIndex` to the next page's):
+Where the marcher is, page by page (rule EP-R2; a page is the walk into a set, from its `startBeatIndex` to the next page's):
 
 - **A page with an exact path for the marcher:** between a path's `startTick` and `endTick` the marcher follows it. On the page's other counts the marcher **stands still**: at the end of the path before, or, before the page's first path, at that path's start. OpenMarch writes no path for a hold, so "4 counts in place, then a 4-count curve" is one path over the last 4 counts.
 - **A page with no exact path for the marcher:** a straight line between the sets, as before.
 
-The format comes from OpenMarch's ADR 0018 and the rules (EP-1 to EP-6, EP-R) from its timeline spec, Appendix M. This package is the shared copy: use its functions instead of writing the math yourself.
+The format comes from OpenMarch's ADR 0018 and the rules (EP-1 to EP-6, EP-R, and for `.om` EP-P1 to EP-P3 and EP-R2) from its timeline spec, Appendix M. This package is the shared copy: use its functions instead of writing the math yourself.
 
 ```json
 {

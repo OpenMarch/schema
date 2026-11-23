@@ -36,7 +36,7 @@ const play = (placed: Placed, tick: number): XY => {
 };
 
 /**
- * Get a show's exact paths ready to play (EP-R). Pages are the walks into each
+ * Get a show's exact paths ready to play (EP-R, and EP-R2 for a whole show). Pages are the walks into each
  * set: a page runs from its `startBeatIndex` to the next page's (the last page
  * runs on to the end of the show). Pages are taken in `startBeatIndex` order,
  * whatever their order in the list. Ticks before the first page, or a show with
