@@ -3,12 +3,32 @@ import { OpenMarchPlaybackShapeSchema } from "./playback/schema";
 import { SUPPORTED_PLAYBACK_VERSION_PATTERN } from "./playback/version";
 import { OpenMarchSchema, OpenMarchTempoDataSchema } from "./schema";
 
+type JsonObjectSchema = {
+	additionalProperties?: unknown;
+	properties?: Record<string, unknown>;
+};
+
+/**
+ * Allow fields this version doesn't know on an object of a generated schema,
+ * as this package's own reader does (it drops them). Without this, a JSON
+ * Schema validator refuses files written by a newer version.
+ */
+function allowUnknownFields(schema: unknown) {
+	if (schema && typeof schema === "object")
+		delete (schema as JsonObjectSchema).additionalProperties;
+}
+
 /**
  * Get the JSON Schema representation of the OpenMarch schema.
  * This can be used for validation in other languages or tools.
+ *
+ * Unknown top-level fields are allowed: new versions add optional fields
+ * there (such as `exactPaths` in 0.3.0), and files carry a `schema` key.
  */
 export function getJsonSchema() {
-	return z.toJSONSchema(OpenMarchSchema);
+	const schema = z.toJSONSchema(OpenMarchSchema);
+	allowUnknownFields(schema);
+	return schema;
 }
 
 /**
@@ -21,9 +41,16 @@ export function getJsonSchemaString(indent = 2): string {
 /**
  * Get the JSON Schema representation of the OpenMarch Tempo (.omt) schema.
  * This can be used for validation in other languages or tools.
+ *
+ * Unknown fields are allowed at the top level and in `metadata`, as for the
+ * full show. In `metadata` this keeps older tempo files valid: they carried a
+ * `performanceArea`, which the tempo schema no longer has.
  */
 export function getOpenMarchTempoDataJsonSchema() {
-	return z.toJSONSchema(OpenMarchTempoDataSchema);
+	const schema = z.toJSONSchema(OpenMarchTempoDataSchema);
+	allowUnknownFields(schema);
+	allowUnknownFields((schema as JsonObjectSchema).properties?.metadata);
+	return schema;
 }
 
 /**

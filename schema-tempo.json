@@ -3,111 +3,12 @@
 	"type": "object",
 	"properties": {
 		"omSchemaVersion": {
-			"default": "0.1.0",
+			"default": "0.3.0",
 			"type": "string"
 		},
 		"metadata": {
 			"type": "object",
 			"properties": {
-				"performanceArea": {
-					"type": "object",
-					"properties": {
-						"yOrigin": {
-							"type": "string",
-							"enum": ["front", "center"]
-						},
-						"inchesPerStep": {
-							"type": "number"
-						},
-						"xCheckpoints": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"terseName": {
-										"type": "string"
-									},
-									"useAsReference": {
-										"type": "boolean"
-									},
-									"fieldLabel": {
-										"type": "string"
-									},
-									"visible": {
-										"type": "boolean"
-									},
-									"stepsFromCenter": {
-										"type": "number"
-									}
-								},
-								"required": [
-									"name",
-									"terseName",
-									"useAsReference",
-									"visible",
-									"stepsFromCenter"
-								],
-								"additionalProperties": false
-							}
-						},
-						"yCheckpoints": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"terseName": {
-										"type": "string"
-									},
-									"useAsReference": {
-										"type": "boolean"
-									},
-									"fieldLabel": {
-										"type": "string"
-									},
-									"visible": {
-										"type": "boolean"
-									},
-									"stepsFromYOrigin": {
-										"type": "number"
-									}
-								},
-								"required": [
-									"name",
-									"terseName",
-									"useAsReference",
-									"visible",
-									"stepsFromYOrigin"
-								],
-								"additionalProperties": false
-							}
-						},
-						"widthFeet": {
-							"type": "number"
-						},
-						"heightFeet": {
-							"type": "number"
-						},
-						"useHashes": {
-							"type": "boolean"
-						}
-					},
-					"required": [
-						"yOrigin",
-						"inchesPerStep",
-						"xCheckpoints",
-						"yCheckpoints",
-						"widthFeet",
-						"heightFeet",
-						"useHashes"
-					],
-					"additionalProperties": false
-				},
 				"createdAtUtc": {
 					"type": "string"
 				},
@@ -133,8 +34,7 @@
 					"additionalProperties": {}
 				}
 			},
-			"required": ["performanceArea", "createdAtUtc"],
-			"additionalProperties": false
+			"required": ["createdAtUtc"]
 		},
 		"pages": {
 			"type": "array",
@@ -197,6 +97,5 @@
 			}
 		}
 	},
-	"required": ["omSchemaVersion", "metadata", "pages", "tempoSections"],
-	"additionalProperties": false
+	"required": ["omSchemaVersion", "metadata", "pages", "tempoSections"]
 }

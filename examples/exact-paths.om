@@ -1,0 +1,287 @@
+{
+	"omSchemaVersion": "0.3.0",
+	"metadata": {
+		"createdAtUtc": "2026-11-22T12:00:00Z",
+		"info": {
+			"title": "Exact paths example"
+		},
+		"performanceArea": {
+			"yOrigin": "front",
+			"inchesPerStep": 22.5,
+			"xCheckpoints": [
+				{
+					"name": "50 yard line",
+					"terseName": "50",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromCenter": 0
+				}
+			],
+			"yCheckpoints": [
+				{
+					"name": "Front sideline",
+					"terseName": "FSL",
+					"useAsReference": true,
+					"visible": true,
+					"stepsFromYOrigin": 0
+				}
+			],
+			"widthFeet": 360,
+			"heightFeet": 160,
+			"useHashes": true
+		}
+	},
+	"performers": [
+		{
+			"id": 1,
+			"label": "B1",
+			"section": "Baritone"
+		},
+		{
+			"id": 2,
+			"label": "T1",
+			"section": "Trumpet"
+		},
+		{
+			"id": 3,
+			"label": "M1",
+			"section": "Mellophone"
+		}
+	],
+	"pages": [
+		{
+			"id": "1",
+			"name": "1",
+			"startBeatIndex": 0,
+			"duration": 0
+		},
+		{
+			"id": "2",
+			"name": "2",
+			"startBeatIndex": 1,
+			"duration": 4
+		},
+		{
+			"id": "3",
+			"name": "3",
+			"startBeatIndex": 9,
+			"duration": 4
+		}
+	],
+	"tempoSections": [
+		{
+			"tempo": 0,
+			"numberOfBeats": 1
+		},
+		{
+			"tempo": 120,
+			"numberOfBeats": 16
+		}
+	],
+	"coordinates": [
+		{
+			"marcherId": "1",
+			"pageId": "1",
+			"xSteps": -8,
+			"ySteps": 20
+		},
+		{
+			"marcherId": "1",
+			"pageId": "2",
+			"xSteps": 8,
+			"ySteps": 20
+		},
+		{
+			"marcherId": "1",
+			"pageId": "3",
+			"xSteps": 8,
+			"ySteps": 36
+		},
+		{
+			"marcherId": "2",
+			"pageId": "1",
+			"xSteps": -8,
+			"ySteps": 40
+		},
+		{
+			"marcherId": "2",
+			"pageId": "2",
+			"xSteps": 0,
+			"ySteps": 50
+		},
+		{
+			"marcherId": "2",
+			"pageId": "3",
+			"xSteps": 16,
+			"ySteps": 50
+		},
+		{
+			"marcherId": "3",
+			"pageId": "1",
+			"xSteps": -16,
+			"ySteps": 30
+		},
+		{
+			"marcherId": "3",
+			"pageId": "2",
+			"xSteps": -16,
+			"ySteps": 40
+		},
+		{
+			"marcherId": "3",
+			"pageId": "3",
+			"xSteps": -24,
+			"ySteps": 40
+		}
+	],
+	"exactPaths": [
+		{
+			"marcherId": "1",
+			"startTick": 480,
+			"endTick": 4320,
+			"path": {
+				"v": 1,
+				"from": [
+					-8,
+					20
+				],
+				"shapes": [
+					{
+						"kind": "arc",
+						"to": [
+							8,
+							20
+						],
+						"bend": 0.5
+					}
+				],
+				"keys": [
+					{
+						"tick": 0,
+						"u": 0
+					},
+					{
+						"tick": 3840,
+						"u": 1
+					}
+				]
+			}
+		},
+		{
+			"marcherId": "1",
+			"startTick": 4320,
+			"endTick": 8160,
+			"path": {
+				"v": 1,
+				"from": [
+					8,
+					20
+				],
+				"shapes": [
+					{
+						"kind": "points",
+						"points": [
+							[
+								16,
+								28
+							],
+							[
+								8,
+								36
+							]
+						]
+					}
+				],
+				"keys": [
+					{
+						"tick": 0,
+						"u": 0
+					},
+					{
+						"tick": 960,
+						"u": 0
+					},
+					{
+						"tick": 2400,
+						"u": 1
+					},
+					{
+						"tick": 3840,
+						"u": 2
+					}
+				]
+			}
+		},
+		{
+			"marcherId": "2",
+			"startTick": 480,
+			"endTick": 4320,
+			"path": {
+				"v": 1,
+				"from": [
+					-8,
+					40
+				],
+				"shapes": [
+					{
+						"kind": "cubic",
+						"c1": [
+							-8,
+							52
+						],
+						"c2": [
+							-4,
+							56
+						],
+						"to": [
+							0,
+							50
+						]
+					}
+				],
+				"keys": [
+					{
+						"tick": 0,
+						"u": 0
+					},
+					{
+						"tick": 3840,
+						"u": 1
+					}
+				]
+			}
+		},
+		{
+			"marcherId": "2",
+			"startTick": 6240,
+			"endTick": 8160,
+			"path": {
+				"v": 1,
+				"from": [
+					0,
+					50
+				],
+				"shapes": [
+					{
+						"kind": "arc",
+						"to": [
+							16,
+							50
+						],
+						"bend": -0.25
+					}
+				],
+				"keys": [
+					{
+						"tick": 0,
+						"u": 0
+					},
+					{
+						"tick": 1920,
+						"u": 1
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { ExactPathListSchema } from "./exact-path/schema";
 
 // ============================================================================
 // VERSION
 // ============================================================================
 
 /** Current schema version */
-export const SCHEMA_VERSION = "0.2.0" as const;
+export const SCHEMA_VERSION = "0.3.0" as const;
 
 // ============================================================================
 // CHECKPOINT
@@ -279,6 +280,29 @@ export const OpenMarchSchema = z.object({
 
 	/** All measures in the show */
 	measures: z.array(MeasureSchema).optional(),
+
+	/**
+	 * Exact paths (since schema 0.3.0): the real walk of a marcher during a
+	 * move, curves included, as shapes plus timing keys. Optional. In a page
+	 * (the walk into a set) that has an exact path for the marcher, the marcher
+	 * follows it between its `startTick` and `endTick` and stands still on the
+	 * page's other counts (at the end of the path before, or the start of the
+	 * page's first path). In a page without one, and in readers that don't know
+	 * this field, the marcher walks a straight line between sets as before.
+	 *
+	 * Coordinates are in steps on the same axes as `coordinates`: x from the
+	 * center of the field (negative to the audience's left), y from the y-origin
+	 * toward the back of the field (from the front sideline when `yOrigin` is
+	 * `"front"`). That y points up the field, the opposite of OpenMarch's
+	 * on-screen y (down): converting between the two negates each y and also
+	 * each arc's `bend`, because flipping y mirrors which side the arc bows to.
+	 *
+	 * Each path is placed by its own start and end tick, not by a page, so the
+	 * path stays where it is in time when a page boundary moves (though which
+	 * uncovered counts are holds follows the pages). Rules EP-1 to EP-6 and
+	 * EP-P1 to EP-P3 apply; see the README.
+	 */
+	exactPaths: ExactPathListSchema.optional(),
 });
 
 // ============================================================================

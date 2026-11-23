@@ -1,4 +1,10 @@
-# Example `.ompb` files
+# Example files
+
+## Exact paths in `.om`
+
+`exact-paths.om` is a `.om` show with `exactPaths`: three marchers over three sets. Marcher 1 walks a half circle into set 2, then holds for 2 counts and walks a corner into set 3 (one path, with a hold inside it). Marcher 2 walks a cubic curve into set 2, then stands on set 2 for 4 counts, which no path covers, and walks an arc into set 3 over the last 4. Marcher 3 has no exact paths, so a reader draws straight lines. The tests check that it validates and that each path starts and ends on the marcher's sets.
+
+## Example `.ompb` files
 
 Valid OpenMarch playback files for testing a reader, such as the mobile app. Each show comes as a gzipped `.ompb` file, as an app would receive it, and a readable `.json` copy with the same data. The [format spec](https://github.com/OpenMarch/schema/issues/1) describes every field.
 

@@ -22,6 +22,7 @@ The main `OpenMarchSchema` contains:
 - **`tempoSections`** - Tempo changes throughout the show
 - **`coordinates`** - Marcher positions in steps from center/front
 - **`measures`** - Optional measure markers with rehearsal marks
+- **`exactPaths`** - Optional (since schema `0.3.0`): the real walk of a marcher during a move, curves included. See [Exact paths](#exact-paths)
 
 ### OpenMarch Tempo (.omt)
 
@@ -326,6 +327,101 @@ The positive and negative directions are the same as an algebraic coordinate pla
   - Positive = towards back-field always
 - `rotation_degrees`: Optional facing direction (0 = toward front sideline)
 
+### Exact paths
+
+`exactPaths` (optional, since schema `0.3.0`) stores how a marcher really walks during a move, curves and speed changes included, so a reader can play a show exactly as OpenMarch does without OpenMarch's path engine. Readers that don't know the field draw straight lines between sets, as before. Files without the field are unchanged and still valid.
+
+Where the marcher is, page by page (rule EP-R2; a page is the walk into a set, from its `startBeatIndex` to the next page's):
+
+- **A page with an exact path for the marcher:** between a path's `startTick` and `endTick` the marcher follows it. On the page's other counts the marcher **stands still**: at the end of the path before, or, before the page's first path, at that path's start. OpenMarch writes no path for a hold, so "4 counts in place, then a 4-count curve" is one path over the last 4 counts.
+- **A page with no exact path for the marcher:** a straight line between the sets, as before.
+
+The format comes from OpenMarch's ADR 0018 and the rules (EP-1 to EP-6, EP-R, and for `.om` EP-P1 to EP-P3 and EP-R2) from its timeline spec, Appendix M. This package is the shared copy: use its functions instead of writing the math yourself.
+
+```json
+{
+  "exactPaths": [
+    {
+      "marcherId": "1",
+      "startTick": 480,
+      "endTick": 4320,
+      "path": {
+        "v": 1,
+        "from": [-8, 20],
+        "shapes": [{ "kind": "arc", "to": [8, 20], "bend": 0.5 }],
+        "keys": [{ "tick": 0, "u": 0 }, { "tick": 3840, "u": 1 }]
+      }
+    }
+  ]
+}
+```
+
+#### Placing a path in time
+
+Each entry belongs to one marcher (`marcherId`, the same ids as `coordinates`) and carries its own **start and end tick**. It isn't tied to a page: when a page boundary moves, the path itself stays where it is in time. Which counts around it are holds can change, though, since that depends on which page they fall in (see above).
+
+- There are **480 ticks per beat** (`TICKS_PER_BEAT`), the MIDI PPQ that DAWs use.
+- Ticks count from the start of the show, on the same beat scale as `startBeatIndex`: beat `b` is tick `b × 480`. A walk into a page usually starts at `startBeatIndex × 480` and ends where the next page starts.
+- The path's own key ticks count from `startTick`, so `endTick` is `startTick` plus the last key's tick.
+- A path may start or end anywhere, even in another page than the one it starts in. Its first point is where the marcher is when it starts, and its last where the marcher is when it ends.
+
+#### The path
+
+A path starts at `from` and continues through `shapes`, each starting where the last one ended:
+
+- **`points`**: straight lines through a list of points. Each point is a corner; a single straight leg is a list of one point.
+- **`arc`**: a circular arc to `to`. `bend` is the signed sagitta over the chord: the arc's middle is `M + bend·c·n`, with `M` the chord's midpoint, `c` its length and `n = (−dy, dx)/c` the chord direction turned +90°. With `.om`'s y up the field, a positive `bend` on a chord along +x bows toward the back. `0 < |bend| ≤ 1/2`, so at most a half turn.
+- **`cubic`**: a cubic Bézier curve to `to`, through the controls `c1` and `c2`.
+
+Every straight leg, arc and cubic is one **piece**, counted from 0 across the path. **`keys`** say when the marcher is where: at `tick` the marcher is at place `u`, the piece number plus the share of that piece's length (`1.5` is halfway along the second piece; the end is the number of pieces). Between keys the marcher walks at a steady speed, measured along the real curve: a cubic by its true length, not by its Bézier parameter. Two keys with the same `u` are a hold.
+
+#### Coordinates and arcs
+
+Points are in steps on the same axes as `coordinates`: x from the center of the field (negative toward the audience's left), y from the y-origin toward the back of the field. That y points *up* the field, the opposite of OpenMarch's on-screen y and of SVG. When converting to y-down, negate each y **and each arc's `bend`**: flipping y mirrors the side the arc bows to.
+
+#### Rules
+
+Validating a show applies these rules. Each break of a rule has a message starting with the rule's id, and its `path` points at the field. Problems found by the rule checks also carry `params.rule`. Data of the wrong shape (a missing field, an unknown `kind`, a point that isn't `[x, y]`) gets Zod's usual shape errors. `schema.json` carries the limits a JSON Schema can express (lengths, whole ticks, the `bend` range); the rest need this package.
+
+| Rule | |
+| --- | --- |
+| EP-1 | Every coordinate, `bend`, `tick` and `u` is a finite number; `v` is 1. |
+| EP-2 | A path has at least one shape; a `points` shape has at least one point. A repeated point is a leg of length 0. |
+| EP-3 | An arc has `0 < \|bend\| ≤ 1/2` and doesn't end where it starts. |
+| EP-4 | A cubic's length is its true arc length. |
+| EP-5 | At least two keys. The first is `{tick: 0, u: 0}`; the last key's `u` is the number of pieces. Ticks are whole and strictly increase; `u` never decreases. |
+| EP-6 | The path goes somewhere: its length is at least 10⁻⁹ (`EXACT_MIN_LENGTH`) and finite. |
+| EP-P1 | `startTick` is a whole number, 0 or more. |
+| EP-P2 | `endTick` is `startTick` plus the last key's tick. |
+| EP-P3 | One marcher's paths don't overlap in time. One may start on the tick another ends. |
+
+`checkExactPath(path)` returns a single path's problems as `{ rule, message, path }`.
+
+#### Changing the format later
+
+`v` stays `1`, and the shapes stay `points`, `arc` and `cubic`. A 0.5.0 reader refuses a whole show whose exact paths break a rule, including an unknown `v` or `kind`, so an incompatible change would lock today's readers out of the show. Such a change goes in a **new top-level field** instead, which today's readers drop while still reading `exactPaths`. Validation stays strict, so a writer's mistake is caught rather than silently ignored.
+
+#### Playing paths
+
+```typescript
+import { createExactPathReader, exactPlayer, TICKS_PER_BEAT } from '@openmarch/schema';
+
+// A whole show: by marcher and show tick (fractional ticks are fine).
+// Follows the paths and stands still on a page's uncovered counts.
+const reader = createExactPathReader(show);
+const xy = reader.positionAt('1', beat * TICKS_PER_BEAT); // [x, y], or undefined: no path this page, draw a straight line
+
+// One path: ticks from the path's own start
+for (const entry of show.exactPaths ?? []) {
+  const player = exactPlayer(entry.path);
+  player.pointAt(1920);
+}
+```
+
+Building a player measures the path, so build it once and call `pointAt` for each frame. `createExactPathReader` does this for you.
+
+[`examples/exact-paths.om`](examples/exact-paths.om) has a show with one path of each shape, a hold inside a path, a path that starts after 4 counts standing still, and a marcher with no exact paths.
+
 ### Performance Area
 
 The performance area defines the field layout including:
@@ -486,6 +582,8 @@ if (isValidOpenMarchTempoData(data)) {
 ### JSON Schema
 
 Generated JSON Schemas are available at `schema.json` (full show), `schema-tempo.json` (tempo-only) and `schema-playback.json` (`.ompb`) for use with other languages and tools. `schema-playback.json` describes the shape only: the checker's rules need this package.
+
+`schema.json` and `schema-tempo.json` allow fields they don't know at the top level (and, for tempo, in `metadata`), as this package's reader does, so files from a newer version still validate. Fields inside known objects stay strict.
 
 ## Development
 
