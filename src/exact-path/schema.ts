@@ -77,6 +77,8 @@ export const ExactKeySchema = z.object({
  */
 export const ExactPathSchema = z
 	.object({
+		// Stays 1: readers refuse a show with any other value, so an incompatible
+		// change goes in a new top-level field instead (see the README).
 		v: z.literal(1, { error: "EP-1: v must be 1" }),
 		from: pointWith("Where the walk starts, [x, y] in steps"),
 		shapes: z.array(ExactShapeSchema).meta({

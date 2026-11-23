@@ -397,6 +397,10 @@ Validating a show applies these rules. Each break of a rule has a message starti
 
 `checkExactPath(path)` returns a single path's problems as `{ rule, message, path }`.
 
+#### Changing the format later
+
+`v` stays `1`, and the shapes stay `points`, `arc` and `cubic`. A 0.5.0 reader refuses a whole show whose exact paths break a rule, including an unknown `v` or `kind`, so an incompatible change would lock today's readers out of the show. Such a change goes in a **new top-level field** instead, which today's readers drop while still reading `exactPaths`. Validation stays strict, so a writer's mistake is caught rather than silently ignored.
+
 #### Playing paths
 
 ```typescript
